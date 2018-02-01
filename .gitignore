@@ -1,20 +1,4 @@
-# Files for the ART/Dalvik VM
-*.dex
-
-# Gradle files
-.gradle
+/build
 *.gradle
-*.bat
-gradle
-gradle*
-build
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Log Files
-*.log
-
-# Intellij
 *.iml
-.idea
+*.pro
