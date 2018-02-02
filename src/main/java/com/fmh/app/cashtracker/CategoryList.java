@@ -191,7 +191,7 @@ public class CategoryList extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(context, Settings.class);
+            Intent intent = new Intent(context, Setting.class);
             startActivity(intent);
             return true;
         }

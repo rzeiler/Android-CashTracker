@@ -33,17 +33,18 @@
                 android:value="com.fmh.app.cashtracker.CategoryList" />
         </activity>
         <activity
-            android:name=".Settings"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".CategoryList">
+            android:name=".CategoryEdit"
+            android:label="@string/title_activity_category_edit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Setting"
+            android:label="@string/title_activity_setting"
+            android:parentActivityName=".CategoryList"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryList" />
         </activity>
-        <activity
-            android:name=".CategoryEdit"
-            android:label="@string/title_activity_category_edit"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

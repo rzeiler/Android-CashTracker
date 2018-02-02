@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory
+        android:key="Setting"
+        android:title="Einstellungen" >
+        <EditTextPreference
+            android:inputType="number"
+            android:key="limitMonth"
+            android:summary="Wenn die Grenze überschritten wird erfolgt eine Information."
+            android:title="Monatsgrenze" />
+        <EditTextPreference
+            android:inputType="number"
+            android:key="limitYear"
+            android:summary="Wenn die Grenze überschritten wird erfolgt eine Information."
+            android:title="Jahresgrenze" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cbxAlert"
+            android:summary="Info wenn die Grenze überschritten wird."
+            android:title="Alarm" />
+        <EditTextPreference
+            android:inputType="text"
+            android:key="_active_user"
+            android:summary="Benutzer der Daten."
+            android:title="Benutzer" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="backup"
+        android:title="Sicherung / Wiederherstellung" >
+        <Preference
+            android:dialogTitle="Wiederherstellungspunkt"
+            android:key="listRestore"
+            android:summary="Gespeicherte Daten zurückspeichern."
+            android:title="Wiederherstellen" />
+        <Preference
+            android:key="btnBackup"
+            android:summary="Daten der App speichern."
+            android:title="Sichern" />
+    </PreferenceCategory>
+</PreferenceScreen>
