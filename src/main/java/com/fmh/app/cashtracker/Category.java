@@ -1,10 +1,12 @@
 package com.fmh.app.cashtracker;
 
+import java.io.Serializable;
+
 /**
  * Created by ralf on 01.02.18.
  */
 
-public class Category {
+public class Category implements Serializable {
 
     // private variables
     int _Id = -1;

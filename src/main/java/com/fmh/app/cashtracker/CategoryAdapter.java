@@ -49,6 +49,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         // Set the view to fade in
         setFadeAnimation(holder.itemView);
 
+        holder.title.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListener.onItemClick(view, position);
+                    }
+                }
+        );
+
         holder.itemView.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
