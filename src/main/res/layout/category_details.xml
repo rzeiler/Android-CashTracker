@@ -10,7 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -28,7 +28,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+
+            </android.support.v7.widget.Toolbar>
+
+
+            <android.support.v7.widget.GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="75dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="5dp"
+                app:columnCount="1"
+                app:rowCount="2">
+
+                <TextView
+                    android:id="@+id/detailsMonat"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/white"
+                    android:textSize="42sp"
+                    app:layout_column="0"
+                    app:layout_columnWeight="1"
+                    app:layout_row="0" />
+
+                <TextView
+                    android:id="@+id/detailsJahr"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/white"
+                    android:textSize="42sp"
+                    app:layout_column="0"
+                    app:layout_columnWeight="1"
+                    app:layout_row="1" />
+
+            </android.support.v7.widget.GridLayout>
+
+
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -57,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@android:color/holo_red_light"
+        app:backgroundTint="@color/colorAccent"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_mode_edit_white_24dp" />

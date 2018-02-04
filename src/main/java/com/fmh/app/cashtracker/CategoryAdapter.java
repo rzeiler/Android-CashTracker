@@ -44,7 +44,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void onBindViewHolder(CategoryAdapter.CategoryViewHolder holder, final int position) {
         Category _category = categoryList.get(position);
         holder.title.setText(_category.getTitle());
-        holder.genre.setText(String.valueOf(_category.getRating()));
+        holder.summer.setText(String.format("%.2f €", _category.getTotal()));
         holder.year.setText(_category.getUser());
         // Set the view to fade in
         setFadeAnimation(holder.itemView);
@@ -75,12 +75,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, year, genre;
+        public TextView title, year, summer;
 
         public CategoryViewHolder(View v) {
             super(v);
-            title = v.findViewById(R.id.title);
-            genre = v.findViewById(R.id.genre);
+            title = v.findViewById(R.id.categoryTitle);
+            summer = v.findViewById(R.id.categorySumme);
             year = v.findViewById(R.id.year);
         }
     }

@@ -20,7 +20,7 @@
             android:title="Alarm" />
         <EditTextPreference
             android:inputType="text"
-            android:key="_active_user"
+            android:key="active_user"
             android:summary="Benutzer der Daten."
             android:title="Benutzer" />
     </PreferenceCategory>
@@ -29,7 +29,7 @@
         android:title="Sicherung / Wiederherstellung" >
         <Preference
             android:dialogTitle="Wiederherstellungspunkt"
-            android:key="listRestore"
+            android:key="btnRestore"
             android:summary="Gespeicherte Daten zurückspeichern."
             android:title="Wiederherstellen" />
         <Preference

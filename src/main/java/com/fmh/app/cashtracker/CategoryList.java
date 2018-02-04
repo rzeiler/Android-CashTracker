@@ -2,10 +2,10 @@ package com.fmh.app.cashtracker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +30,7 @@ public class CategoryList extends AppCompatActivity {
     private RecyclerView recyclerView;
     public CategoryAdapter mAdapter;
     private Context context;
+    private SharedPreferences preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,8 @@ public class CategoryList extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         context = this;
+
+        preference = PreferenceManager.getDefaultSharedPreferences(context);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         /* create with interface */
@@ -52,12 +55,12 @@ public class CategoryList extends AppCompatActivity {
                     case R.id.title:
                         intent = new Intent(context, CategoryDetails.class);
                         intent.putExtra(CATEGORY_ITEM, (Serializable) categoryListFiltered.get(position));
-                        startActivityForResult(intent,1);
+                        startActivityForResult(intent, 1);
                         break;
                     default:
                         intent = new Intent(context, CategoryEdit.class);
                         intent.putExtra(CATEGORY_ITEM, (Serializable) categoryListFiltered.get(position));
-                        startActivityForResult(intent,1);
+                        startActivityForResult(intent, 1);
                         break;
                 }
 
@@ -73,13 +76,10 @@ public class CategoryList extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-
-        for (int i = 0; i < 10; i++) {
-            prepareMovieData();
-        }
-        for (Category cat : categoryListRoot) {
-            categoryListFiltered.add(cat);
-        }
+        //new CategoryAsyncList(mAdapter, categoryListFiltered, this).execute();
+        DataBase db = new DataBase(this);
+        db.getCategorys(categoryListFiltered, preference.getString("active_user","default"));
+        mAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +90,7 @@ public class CategoryList extends AppCompatActivity {
                 Intent intent = new Intent(context, CategoryEdit.class);
                 intent.putExtra(CATEGORY_ITEM, (Serializable) null);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivityForResult(intent,1);
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -204,12 +204,12 @@ public class CategoryList extends AppCompatActivity {
 
         if (requestCode == 1) {
 
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 Toast.makeText(context, "RESULT_OK " + String.valueOf(data.getStringExtra("result")), Toast.LENGTH_SHORT).show();
 
             }
             if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(context, "RESULT_CANCELED " , Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "RESULT_CANCELED ", Toast.LENGTH_SHORT).show();
 
             }
         }

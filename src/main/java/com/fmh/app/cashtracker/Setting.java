@@ -19,4 +19,8 @@ public class Setting extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+
+
+
+
 }

@@ -2,8 +2,18 @@ package com.fmh.app.cashtracker;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.ParseException;
+
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ralf on 01.02.18.
@@ -39,6 +49,10 @@ public class DataBase extends SQLiteOpenHelper {
             + KEY_sREPEAT + " INTEGER," + KEY_sTOTAL + " DECIMAL(10,2)," + KEY_sISCLONED
             + " INTEGER DEFAULT 0, FOREIGN KEY(" + KEY_sCATEGORY + ") REFERENCES " + TABLE_CATEGORY + "(" + KEY_cID + "))";
 
+    private SimpleDateFormat DeDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private SimpleDateFormat EnDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+
     public DataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -56,8 +70,9 @@ public class DataBase extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addCategory(Category _category) {
+    public long addCategory(Category _category) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long i = 0;
         /* build values */
         ContentValues values = new ContentValues();
         values.put(KEY_cTITLE, _category.getTitle());
@@ -65,9 +80,9 @@ public class DataBase extends SQLiteOpenHelper {
         values.put(KEY_cUSER, _category.getUser());
         values.put(KEY_cRATING, _category.getRating());
         /* call db */
-        db.insert(TABLE_CATEGORY, null, values);
+        i = db.insert(TABLE_CATEGORY, null, values);
         db.close();
-
+        return i;
     }
 
     public int updateCategory(Category _category) {
@@ -123,4 +138,55 @@ public class DataBase extends SQLiteOpenHelper {
         return db.delete(TABLE_CASH, KEY_sID + " = ?", new String[]{String.valueOf(_cash.getCashID())});
     }
 
+    public void ClearData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_CATEGORY);
+        db.execSQL("DELETE FROM " + TABLE_CASH);
+    }
+
+    public Date getDateFromString(String s) {
+        Date _date = null;
+        try {
+            _date = DeDateFormat.parse(s);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        if (_date == null) {
+            try {
+                _date = EnDateFormat.parse(s);
+            } catch (java.text.ParseException e) {
+
+            }
+        }
+        return _date;
+    }
+
+    public List<Category> getCategorys(List<Category> _list, String user) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.DAY_OF_MONTH, 0);
+
+        String query = "SELECT a.id, a.title, SUM(IFNull(b.total,0.00)),  a." + KEY_cCREATEDATE + ", a.rating, a.user FROM category AS a LEFT OUTER JOIN cash AS b ON b.category=a.id AND b." + KEY_sCREATEDATE + " >= ? WHERE a.user='" + user + "' GROUP BY a." + KEY_cID + " ORDER BY a.rating DESC, a.title ASC;";
+        Cursor cursor = db.rawQuery(query, new String[]{});
+        if (cursor.moveToFirst()) {
+            do {
+
+                Category _category = new Category();
+                _category.setCategoryID(cursor.getInt(0));
+                _category.setTitle(cursor.getString(1));
+                _category.setTotal(cursor.getDouble(2));
+                _category.setCreateDate(cursor.getLong(3));
+                _category.setRating(cursor.getInt(4));
+                _category.setUser(cursor.getString(5));
+                _list.add(_category);
+                _category = null;
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return _list;
+    }
 }
