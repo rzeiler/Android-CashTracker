@@ -3,26 +3,28 @@ package com.fmh.app.cashtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class CategoryEdit extends AppCompatActivity {
+import static com.fmh.app.cashtracker.CategoryList.CATEGORY_ITEM;
+
+public class CategoryEdit extends BaseEdit {
 
     private Category _category;
     private Context context;
 
     private EditText etTitle;
     private RatingBar rbFirma;
-    private Button bDate;
 
-    private Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,22 +37,28 @@ public class CategoryEdit extends AppCompatActivity {
         Intent intent = getIntent();
         _category = (Category) intent.getSerializableExtra(CategoryList.CATEGORY_ITEM);
 
-        //toolbar.setTitle(_category.getTitle());
-
-        //bDate = (Button) findViewById(R.id.bDate);
+        bDate = (Button) findViewById(R.id.bDate);
         etTitle = (EditText) findViewById(R.id.etCategory);
         rbFirma = (RatingBar) findViewById(R.id.rbPosition);
 
         if (_category != null) {
+            toolbar.setTitle(_category.getTitle());
             etTitle.setText(_category.getTitle());
             rbFirma.setRating(_category.getRating());
         } else {
+            toolbar.setTitle(_category.getTitle());
             _category = new Category();
             _category.setUser("test");
             _category.setCreateDate(calendar.getTimeInMillis());
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(_category.getCreateDate());
+
+        bDate.setText(DateFormat.format(_category.getCreateDate()));
+
     }
 
     @Override
@@ -73,30 +81,45 @@ public class CategoryEdit extends AppCompatActivity {
 
         if (id == android.R.id.home) {
             Intent returnIntent = new Intent();
-            setResult(RESULT_CANCELED,returnIntent);
+            setResult(RESULT_CANCELED, returnIntent);
             finish();
             return true;
         }
 
-        if (id ==  R.id.action_send) {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("result","Gespeichert");
-            setResult(RESULT_OK,returnIntent);
-            finish();
+        if (id == R.id.action_send) {
+
+            DataBase _db = new DataBase(context);
+            _category.setTitle(String.valueOf(etTitle.getText()));
+            _category.setRating((int) rbFirma.getRating());
+            _category.setCreateDate(calendar.getTimeInMillis());
+
+            int i = _db.updateCategory(_category);
+            if (i > 0) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", "Gespeichert");
+                returnIntent.putExtra(CATEGORY_ITEM, (Serializable) _category);
+                setResult(RESULT_OK, returnIntent);
+
+                Toast.makeText(context,String.format("%s gespeichert.", _category.getTitle()), Toast.LENGTH_SHORT).show();
+
+                finish();
+            } else {
+                Snackbar.make(bDate, String.format("Fehler beim speichern von %s.", _category.getTitle()), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
             return true;
         }
 
-        if (id ==  R.id.action_delete) {
-            Intent returnIntent = new Intent( CategoryEdit.this,CategoryList.class  );
-            returnIntent.putExtra("result","Gelöscht");
+        if (id == R.id.action_delete) {
+            Intent returnIntent = new Intent(CategoryEdit.this, CategoryList.class);
+            returnIntent.putExtra("result", "Gelöscht");
             returnIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            setResult(RESULT_OK,returnIntent);
+            setResult(RESULT_OK, returnIntent);
 
             finish();
             return true;
         }
-
-
 
 
         return super.onOptionsItemSelected(item);

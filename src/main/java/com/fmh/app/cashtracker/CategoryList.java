@@ -52,10 +52,12 @@ public class CategoryList extends AppCompatActivity {
                 Intent intent;
 
                 switch (v.getId()) {
-                    case R.id.title:
+                    case R.id.tvBigletter:
+
                         intent = new Intent(context, CategoryDetails.class);
                         intent.putExtra(CATEGORY_ITEM, (Serializable) categoryListFiltered.get(position));
                         startActivityForResult(intent, 1);
+
                         break;
                     default:
                         intent = new Intent(context, CategoryEdit.class);
@@ -76,75 +78,20 @@ public class CategoryList extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        //new CategoryAsyncList(mAdapter, categoryListFiltered, this).execute();
         DataBase db = new DataBase(this);
-        db.getCategorys(categoryListFiltered, preference.getString("active_user","default"));
+        db.getCategorys(categoryListFiltered, preference.getString("active_user", "default"));
         mAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Message", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
                 Intent intent = new Intent(context, CategoryEdit.class);
                 intent.putExtra(CATEGORY_ITEM, (Serializable) null);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, 1);
             }
         });
-    }
-
-    private void prepareMovieData() {
-        Category movie = new Category("Mad Max: Fury Road", "Action & Adventure", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Inside Out", "Animation, Kids & Family", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Star Wars: Episode VII - The Force Awakens", "Action", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Shaun the Sheep", "Animation", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("The Martian", "Science Fiction & Fantasy", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Mission: Impossible Rogue Nation", "Action", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Up", "Animation", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Star Trek", "Science Fiction", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("The LEGO Movie", "Animation", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Iron Man", "Action & Adventure", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Aliens", "Science Fiction", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Chicken Run", "Animation", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Back to the Future", "Science Fiction", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Raiders of the Lost Ark", "Action & Adventure", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Goldfinger", "Action & Adventure", 2015);
-        categoryListRoot.add(movie);
-
-        movie = new Category("Guardians of the Galaxy", "Science Fiction & Fantasy", 2015);
-        categoryListRoot.add(movie);
-
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override

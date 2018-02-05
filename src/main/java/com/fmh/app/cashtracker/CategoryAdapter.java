@@ -43,13 +43,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(CategoryAdapter.CategoryViewHolder holder, final int position) {
         Category _category = categoryList.get(position);
-        holder.title.setText(_category.getTitle());
-        holder.summer.setText(String.format("%.2f €", _category.getTotal()));
-        holder.year.setText(_category.getUser());
+
+        String bl = _category.getTitle();
+        holder.tvTitle.setText(bl);
+        if (bl.length() > 0) {
+            bl = bl.substring(0, 1).toUpperCase();
+            holder.tvBigletter.setText(bl);
+        }
+        holder.tvSum.setText(String.format("%.2f €", _category.getTotal()));
+
         // Set the view to fade in
         setFadeAnimation(holder.itemView);
 
-        holder.title.setOnClickListener(
+        holder.tvBigletter.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -75,13 +81,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, year, summer;
+        public TextView tvBigletter, tvTitle, tvSum;
 
         public CategoryViewHolder(View v) {
             super(v);
-            title = v.findViewById(R.id.categoryTitle);
-            summer = v.findViewById(R.id.categorySumme);
-            year = v.findViewById(R.id.year);
+            tvBigletter = v.findViewById(R.id.tvBigletter);
+            tvTitle = v.findViewById(R.id.tvTitle);
+            tvSum = v.findViewById(R.id.tvSum);
         }
     }
 
@@ -90,4 +96,5 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         animation.setDuration(FADE_DURATION);
         view.startAnimation(animation);
     }
+
 }

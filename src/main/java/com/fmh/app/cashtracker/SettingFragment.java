@@ -6,11 +6,10 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,14 +41,12 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         return inflater.inflate(R.layout.fragment_setting, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -79,7 +72,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-
 
     }
 
@@ -160,7 +152,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                         _category.setRating(jo.getInt("rating"));
                         long iId = _db.addCategory(_category);
                         _category.setCategoryID(Long.valueOf(iId).intValue());
-                        Log.w("Category Add", String.format("%s", iId));
+                        Log.w("Category Add", String.format("%s", _category.getCategoryID()));
 
                         JSONArray cashArray = jo.getJSONArray("cash");
                         for (int cashIndex = 0; cashIndex < cashArray.length(); cashIndex++) {
@@ -191,9 +183,9 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                                 _cash.setRepeat(sjo.getInt("repeat"));
                                 _cash.setTotal(sjo.getInt("total"));
                                 _cash.setIsCloned(sjo.getInt("iscloned"));
-                                _db.addCash(_cash);
+                                long cashid = _db.addCash(_cash);
 
-                                Log.w("Category Add", String.format("%s", iId));
+                                Log.w("Cash Add", String.format("%s, %s", cashid, iId));
 
                             } catch (SQLiteException ex) {
                                 //ex.printStackTrace();

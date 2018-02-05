@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="10dp">
+    android:layout_margin="5dp"
+    android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/categoryTitle"
+        android:id="@+id/tvBigletter"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_shape"
+        android:gravity="center_vertical|center"
+        android:text="test"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_light"
+        android:textSize="24sp" />
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:textColor="@color/colorText"
-        android:textSize="16dp"
-        android:textStyle="bold" />
+        android:layout_weight="2"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/categorySumme"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/categoryTitle" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:text="test" />
 
-    <TextView
-        android:id="@+id/year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:textColor="@color/colorTextLight" />
+        <TextView
+            android:id="@+id/tvSum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:text="test" />
 
-</RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

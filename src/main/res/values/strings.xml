@@ -6,6 +6,8 @@
     <string name="action_done">Speichern</string>
     <string name="action_delete">Löschen</string>
     <string name="label_description">Beschreibung</string>
+    <string name="label_date">Datum</string>
+
 
     <string name="title_activity_scrolling2">ScrollingActivity2</string>
     <string name="large_text">

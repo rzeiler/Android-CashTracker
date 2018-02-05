@@ -4,13 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.ParseException;
-
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -188,5 +185,75 @@ public class DataBase extends SQLiteOpenHelper {
         cursor.close();
 
         return _list;
+    }
+
+    public Double getSum(int Range, String user, Category category) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.DAY_OF_MONTH, 0);
+        switch (Range) {
+            case Calendar.YEAR:
+                c.set(Calendar.MONTH, 0);
+                break;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "";
+        Double result = 0.0;
+        /* year and month */
+        Cursor cursor = null;
+        if (category == null) {
+            query = "SELECT IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.int_create_date >= ? AND b.user = ?;";
+            cursor = db.rawQuery(query, new String[]{String.valueOf(c.getTimeInMillis()), user});
+        } else {
+            query = "SELECT IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.int_create_date >= ? AND b.user = ? AND b.id = ?;";
+            cursor = db.rawQuery(query, new String[]{String.valueOf(c.getTimeInMillis()), user, String.valueOf(category.getCategoryID())});
+        }
+        if (cursor.moveToFirst()) {
+            do {
+                result = cursor.getDouble(0);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return result;
+    }
+
+    public List<CategorySum> getCategorySum(List<CategorySum> _list, String user, Category category) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.DAY_OF_MONTH, 0);
+        c.set(Calendar.MONTH, 0);
+        c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 3);
+
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "";
+        /* year and month */
+        Cursor cursor = null;
+
+        String striftime = "strftime('%Y',datetime(a.int_create_date/1000, 'unixepoch')), strftime('%m',datetime(a.int_create_date/1000, 'unixepoch')) ";
+        query = "SELECT " + striftime + ", IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.category = ? AND a.int_create_date >= ? AND b.user = ? GROUP BY " + striftime + " ORDER BY " + striftime + " DESC;";
+        cursor = db.rawQuery(query, new String[]{String.valueOf(category.getCategoryID()), String.valueOf(c.getTimeInMillis()), user });
+
+        if (cursor.moveToFirst()) {
+            do {
+                CategorySum _categorySum = new CategorySum(String.format("%s %s", cursor.getString(0), cursor.getString(1)), cursor.getDouble(2));
+                _list.add(_categorySum);
+                Log.w("DB", "RUN");
+
+                _categorySum = null;
+
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return _list;
+    }
+
+    public Double getSum(int Range, String user) {
+        return getSum(Range, user, null);
     }
 }
