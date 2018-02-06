@@ -108,7 +108,7 @@ public class DataBase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cash _cash = new Cash();
 
-        String[] tableColumns = new String[] {
+        String[] tableColumns = new String[]{
                 KEY_sID,
                 KEY_sCONTENT,
                 KEY_sCREATEDATE,
@@ -117,9 +117,9 @@ public class DataBase extends SQLiteOpenHelper {
                 KEY_sTOTAL,
                 KEY_sISCLONED
         };
-        String whereClause = String.format("%s = ?",KEY_sID) ;
+        String whereClause = String.format("%s = ?", KEY_sID);
 
-        String[] whereArgs = new String[] {
+        String[] whereArgs = new String[]{
                 String.valueOf(Id)
         };
 
@@ -143,7 +143,6 @@ public class DataBase extends SQLiteOpenHelper {
 
         return _cash;
     }
-
 
 
     public long addCash(Cash _cash) {
@@ -213,14 +212,21 @@ public class DataBase extends SQLiteOpenHelper {
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.DAY_OF_MONTH, 0);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
 
-        String query = "SELECT a.id, a.title, SUM(IFNull(b.total,0.00)),  a." + KEY_cCREATEDATE + ", a.rating, a.user FROM category AS a LEFT OUTER JOIN cash AS b ON b.category=a.id AND b." + KEY_sCREATEDATE + " >= ? WHERE a.user='" + user + "' GROUP BY a." + KEY_cID + " ORDER BY a.rating DESC, a.title ASC;";
+        if (filterTitel != "")
+            filterTitel = "a." + KEY_cTITLE + " LIKE '" + filterTitel + "%' AND ";
 
-        if (filterTitel != "") {
-            query = "SELECT a.id, a.title, SUM(IFNull(b.total,0.00)),  a." + KEY_cCREATEDATE + ", a.rating, a.user FROM category AS a LEFT OUTER JOIN cash AS b ON b.category=a.id AND b." + KEY_sCREATEDATE + " >= ? WHERE a.title LIKE '" + filterTitel + "%' AND a.user='" + user + "' GROUP BY a." + KEY_cID + " ORDER BY a.rating DESC, a.title ASC;";
-        }
+        String query = "SELECT a." + KEY_cID + ", a." + KEY_cTITLE + ", SUM(IFNull(b." + KEY_sTOTAL + ",0.00)),  a." + KEY_cCREATEDATE +
+                ", a." + KEY_cRATING + ", a." + KEY_cUSER + ", COUNT(a." + KEY_cID + ") FROM " + TABLE_CATEGORY + " AS a LEFT OUTER JOIN " + TABLE_CASH + " AS b ON b." + KEY_sCATEGORY + "=a.id AND b." +
+                KEY_sCREATEDATE + " >= ? WHERE " + filterTitel + " a." + KEY_cUSER + " = ? GROUP BY a." + KEY_cID + " ORDER BY a." + KEY_cRATING + " DESC, a." + KEY_cTITLE + " ASC;";
 
-        Cursor cursor = db.rawQuery(query, new String[]{});
+        Cursor cursor = db.rawQuery(query, new String[]{
+                String.valueOf(c.getTimeInMillis()),
+                user
+        });
+
         if (cursor.moveToFirst()) {
             do {
 
@@ -316,7 +322,7 @@ public class DataBase extends SQLiteOpenHelper {
     public List<Cash> getCashs(List<Cash> cashList, String user, Category category, String filterTitel) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] tableColumns = new String[] {
+        String[] tableColumns = new String[]{
                 KEY_sID,
                 KEY_sCONTENT,
                 KEY_sCREATEDATE,
@@ -325,9 +331,9 @@ public class DataBase extends SQLiteOpenHelper {
                 KEY_sTOTAL,
                 KEY_sISCLONED
         };
-        String whereClause = String.format("%s = ?",KEY_sCATEGORY) ;
+        String whereClause = String.format("%s = ?", KEY_sCATEGORY);
 
-        String[] whereArgs = new String[] {
+        String[] whereArgs = new String[]{
                 String.valueOf(category.getCategoryID())
         };
 

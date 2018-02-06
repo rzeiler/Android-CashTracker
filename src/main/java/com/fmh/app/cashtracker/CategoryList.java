@@ -3,6 +3,7 @@ package com.fmh.app.cashtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -80,7 +81,7 @@ public class CategoryList extends AppCompatActivity {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         db = new DataBase(this);
-        db.getCategorys(categoryList, preference.getString("active_user", "default"));
+
 
         mAdapter.notifyDataSetChanged();
 
@@ -95,7 +96,7 @@ public class CategoryList extends AppCompatActivity {
             }
         });
 
-
+        new CategoryAsyncTask().execute();
     }
 
     @Override
@@ -157,6 +158,25 @@ public class CategoryList extends AppCompatActivity {
                 /* track change */
                 mAdapter.notifyDataSetChanged();
             }
+        }
+    }
+
+    public class CategoryAsyncTask extends AsyncTask<Object, Void, List<Category>> {
+
+        @Override
+        protected List<Category> doInBackground(Object... objects) {
+            db.getCategorys(categoryList, preference.getString("active_user", "default"));
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<Category> o) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 

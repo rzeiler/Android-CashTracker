@@ -3,6 +3,7 @@ package com.fmh.app.cashtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -57,8 +58,7 @@ public class CashList extends AppCompatActivity {
 
         /* create with interface */
         db = new DataBase(this);
-        db.getCashs(cashList, preference.getString("active_user", "default"), _category);
-        /* set */
+              /* set */
         mAdapter = new CashAdapter(CashId, cashList, new CashAdapter.Listener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -94,6 +94,8 @@ public class CashList extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
+        new CashAsyncTask().execute();
 
     }
 
@@ -205,6 +207,25 @@ public class CashList extends AppCompatActivity {
                 /* track change */
                 mAdapter.notifyDataSetChanged();
             }
+        }
+    }
+
+    public class CashAsyncTask extends AsyncTask<Object, Void, List<Cash>> {
+
+        @Override
+        protected List<Cash> doInBackground(Object... objects) {
+            db.getCashs(cashList, preference.getString("active_user", "default"), _category);
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<Cash> o) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 

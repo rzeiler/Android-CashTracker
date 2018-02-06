@@ -9,13 +9,13 @@ import java.io.Serializable;
 public class Category implements Serializable {
 
     // private variables
-    int _Id = -1;
+    long _Id = -1;
+    long _Count = 0;
     String _Title;
     long _CreateDate;
     String _User;
     int _Rating;
     double _Total;
-
 
     // Empty constructor
     public Category() {
@@ -39,16 +39,17 @@ public class Category implements Serializable {
     }
 
     // constructor
-    public Category(int Id, String Title, long CreateDate, String User, int Rating, double Total) {
+    public Category(long Id, String Title, long CreateDate, String User, int Rating, double Total, long Count) {
         this._Id = Id;
         this._Title = Title;
         this._CreateDate = CreateDate;
         this._User = User;
         this._Rating = Rating;
         this._Total = Total;
+        this._Count = Count;
     }
 
-    public int getCategoryID() {
+    public long getCategoryID() {
         return this._Id;
     }
 
@@ -94,6 +95,14 @@ public class Category implements Serializable {
 
     public void setTotal(double Total) {
         this._Total = Total;
+    }
+
+    public long getCount() {
+        return this._Count;
+    }
+
+    public void setCount(long Count) {
+        this._Count = Count;
     }
 
 }

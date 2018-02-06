@@ -39,11 +39,8 @@
         android:maxHeight="12dp"
         android:minHeight="10dp"
         android:progress="40"
-
-
         android:progressTint="@color/colorAccent"
         android:progressBackgroundTint="@color/colorAccentDark"
-
         app:layout_column="0"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"

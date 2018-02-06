@@ -1,55 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:orientation="horizontal">
+    android:layout_marginBottom="2.5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="2.5dp"
+    android:clickable="true"
+    android:focusable="auto"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:padding="5dp">
 
-    <TextView
-        android:id="@+id/tvBigletter"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/round_shape"
-        android:gravity="center_vertical|center"
-        android:text="test"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="24sp" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:orientation="vertical">
+        android:layout_margin="10dp"
+        app:columnCount="3"
+        app:rowCount="2">
+
+        <TextView
+            android:id="@+id/tvBigletter"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="15dp"
+            android:background="@drawable/round_shape"
+            android:gravity="center_vertical|center"
+            android:text="V"
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            android:textSize="24sp"
+            app:layout_column="0"
+            app:layout_row="0"
+            app:layout_rowSpan="2" />
 
         <TextView
             android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:text="test" />
+            android:layout_margin="5dp"
+            android:text="test"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="0" />
 
         <TextView
             android:id="@+id/tvSum"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingTop="5dp"
-            android:text="test" />
+            android:layout_margin="5dp"
+            android:text="test"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="1" />
 
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:rating="0"
+            android:stepSize="1"
+            app:layout_column="2"
+            app:layout_row="0" />
 
-    </LinearLayout>
-
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:rating="0"
-        android:stepSize="1" />
-
-
-</LinearLayout>
+    </android.support.v7.widget.GridLayout>
+</android.support.v7.widget.CardView>
