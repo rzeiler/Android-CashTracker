@@ -1,10 +1,12 @@
 package com.fmh.app.cashtracker;
 
+import java.io.Serializable;
+
 /**
  * Created by ralf on 01.02.18.
  */
 
-public class Cash {
+public class Cash implements Serializable {
 
     long _Id = -1;
     String _Content;

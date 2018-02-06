@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,12 +24,12 @@ public class CategoryList extends AppCompatActivity {
 
     public static final String CATEGORY_ITEM = "com.fmh.app.cashtracker.CATEGORY_ITEM";
 
-    private List<Category> categoryListFiltered = new ArrayList<>();
-    public List<Category> categoryListRoot = new ArrayList<>();
+    private List<Category> categoryList = new ArrayList<>();
     private RecyclerView recyclerView;
     public CategoryAdapter mAdapter;
     private Context context;
     private SharedPreferences preference;
+    private DataBase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +40,13 @@ public class CategoryList extends AppCompatActivity {
 
         context = this;
 
+        getSupportActionBar().setTitle(getString(R.string.app_name));
+
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         /* create with interface */
-        mAdapter = new CategoryAdapter(categoryListFiltered, new CategoryAdapter.Listener() {
+        mAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.Listener() {
             @Override
             public void onItemClick(View v, int position) {
 
@@ -55,13 +56,13 @@ public class CategoryList extends AppCompatActivity {
                     case R.id.tvBigletter:
 
                         intent = new Intent(context, CategoryDetails.class);
-                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryListFiltered.get(position));
+                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryList.get(position));
                         startActivityForResult(intent, 1);
 
                         break;
                     default:
-                        intent = new Intent(context, CategoryEdit.class);
-                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryListFiltered.get(position));
+                        intent = new Intent(context, CashList.class);
+                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryList.get(position));
                         startActivityForResult(intent, 1);
                         break;
                 }
@@ -78,8 +79,9 @@ public class CategoryList extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        DataBase db = new DataBase(this);
-        db.getCategorys(categoryListFiltered, preference.getString("active_user", "default"));
+        db = new DataBase(this);
+        db.getCategorys(categoryList, preference.getString("active_user", "default"));
+
         mAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -92,6 +94,8 @@ public class CategoryList extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
+
     }
 
     @Override
@@ -113,18 +117,10 @@ public class CategoryList extends AppCompatActivity {
 
         @Override
         public boolean onQueryTextChange(String newText) {
-
-            // categoryList
-            categoryListFiltered.clear();
-            for (Category cat : categoryListRoot) {
-                if (cat.getTitle().toLowerCase().contains(newText.toLowerCase())) {
-                    categoryListFiltered.add(cat);
-                }
-            }
+            // categoryList rebuild
+            categoryList.clear();
+            db.getCategorys(categoryList, preference.getString("active_user", "default"), newText.toLowerCase());
             mAdapter.notifyDataSetChanged();
-            if (newText != "")
-                Toast.makeText(context, String.format("Suche nach '%s' (%d) ", newText, categoryListFiltered.size()), Toast.LENGTH_SHORT).show();
-
             return false;
         }
     };
@@ -147,17 +143,19 @@ public class CategoryList extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
         if (requestCode == 1) {
-
             if (resultCode == RESULT_OK) {
-                Toast.makeText(context, "RESULT_OK " + String.valueOf(data.getStringExtra("result")), Toast.LENGTH_SHORT).show();
+                Category _category = (Category) data.getSerializableExtra(CATEGORY_ITEM);
+                /* search item by id */
+                for (Category item : categoryList) {
+                    if (item.getCategoryID() == _category.getCategoryID()) {
+                        item.setTitle(_category.getTitle());
+                        item.setRating(_category.getRating());
+                    }
+                }
 
-            }
-            if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(context, "RESULT_CANCELED ", Toast.LENGTH_SHORT).show();
-
+                /* track change */
+                mAdapter.notifyDataSetChanged();
             }
         }
     }

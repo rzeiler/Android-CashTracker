@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#37474f</color>
-    <color name="colorPrimaryDark">#27373f</color>
-    <color name="colorAccent">#e53935</color>
+    <color name="colorPrimary">#e53935</color>
+    <color name="colorPrimaryDark">#b43935</color>
+    <color name="colorAccent">#263238</color>
+    <color name="colorAccentDark">#162228</color>
+
+
+
     <color name="colorText">#3e4748</color>
     <color name="colorTextLight">#6d7c7e</color>
+
+    <color name="colorTextDisabled">#cfd8dc</color>
+
+    <color name="colorTextWhite">#f0f0f0</color>
+
+
+
+
+    <color name="a">#EF5350</color>
+    <color name="b">#EC407A</color>
+    <color name="c">#BA68C8</color>
+    <color name="d">#9575CD</color>
+    <color name="e">#7986CB</color>
+    <color name="f">#0277bd</color>
+    <color name="g">#0277BD</color>
+    <color name="h">#0097A7</color>
+    <color name="i">#8CD37A</color>
+    <color name="j">#009688</color>
+    <color name="k">#43A047</color>
+    <color name="l">#689F38</color>
+    <color name="m">#827717</color>
+    <color name="n">#FF5722</color>
+    <color name="o">#EF6C00</color>
+    <color name="p">#DD2C00</color>
+    <color name="q">#8D6E63</color>
+    <color name="r">#616161</color>
+    <color name="s">#546E7A</color>
+    <color name="t">#263238</color>
+    <color name="u">#EF6C00</color>
+    <color name="v">#e53935</color>
+    <color name="w">#33691E</color>
+    <color name="x">#1B5E20</color>
+    <color name="y">#006064</color>
+    <color name="z">#0D47A1</color>
+
 </resources>

@@ -34,7 +34,12 @@
         </activity>
         <activity
             android:name=".CategoryEdit"
-            android:label="@string/title_activity_category_edit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CashEdit"
+           android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CashList"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Setting"

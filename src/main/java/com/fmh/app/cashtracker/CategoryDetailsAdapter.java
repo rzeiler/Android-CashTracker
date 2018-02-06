@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,11 +21,12 @@ class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter
     private static final long FADE_DURATION = 500;
     private List<CategorySum> _categorySumList;
     private Context context;
+    private double _maxTotal;
 
     //constructor
-    public CategoryDetailsAdapter(List<CategorySum> categorySumList, Context context) {
+    public CategoryDetailsAdapter(List<CategorySum> categorySumList, Context context, double maxTotal) {
         this._categorySumList = categorySumList;
-
+        this._maxTotal = maxTotal;
         this.context = context;
     }
 
@@ -38,14 +40,12 @@ class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter
     @Override
     public void onBindViewHolder(CategoryDetailsAdapter.CategoryViewHolder holder, final int position) {
         CategorySum _categorySumItem = _categorySumList.get(position);
-
         holder.tvDate.setText(_categorySumItem.getMonth());
         holder.tvSum.setText(String.format("%.2f €", _categorySumItem.getTotal()));
-
+        Double progress = _categorySumItem.getTotal() / _maxTotal * 100;
+        holder.Bar.setProgress(progress.intValue());
         // Set the view to fade in
-        setFadeAnimation(holder.itemView);
-
-
+        setFadeAnimation(holder.itemView, position);
     }
 
     @Override
@@ -55,18 +55,20 @@ class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
         public TextView tvDate, tvSum;
+        public ProgressBar Bar;
 
         public CategoryViewHolder(View v) {
             super(v);
-
+            Bar = v.findViewById(R.id.pbSatus);
             tvDate = v.findViewById(R.id.tvDate);
             tvSum = v.findViewById(R.id.tvSum);
         }
     }
 
-    private void setFadeAnimation(View view) {
+    private void setFadeAnimation(View view, int position) {
         Animation animation = AnimationUtils.loadAnimation(this.context, R.anim.push_left_in);
         animation.setDuration(FADE_DURATION);
+        //animation.setStartOffset(position * FADE_DURATION / 4);
         view.startAnimation(animation);
     }
 

@@ -56,7 +56,17 @@ public class CategoryDetails extends AppCompatActivity {
 
         SharedPreferences _sp = PreferenceManager.getDefaultSharedPreferences(context);
 
-        _adapter = new CategoryDetailsAdapter(categorySumList, context);
+        DataBase db = new DataBase(this);
+        categorySumList = db.getCategorySum(categorySumList, _sp.getString("active_user", "default"), _category);
+
+        double maxTotal = 0.0;
+
+        for (CategorySum item : categorySumList) {
+            if (maxTotal < item.getTotal())
+                maxTotal = item.getTotal();
+        }
+
+        _adapter = new CategoryDetailsAdapter(categorySumList, context, maxTotal);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -64,12 +74,8 @@ public class CategoryDetails extends AppCompatActivity {
         /* performance */
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
 
-
-
-        DataBase db = new DataBase(this);
-        categorySumList = db.getCategorySum(categorySumList, _sp.getString("active_user", "default"), _category);
         _adapter.notifyDataSetChanged();
 
         _detailsMonat = (TextView) findViewById(R.id.detailsMonat);

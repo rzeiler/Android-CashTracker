@@ -62,7 +62,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                         .setType("*/*")
                         .setAction(Intent.ACTION_GET_CONTENT);
 
-                startActivityForResult(Intent.createChooser(intent, getString(R.string.setting_file_select_title)), 200);
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
 
                 return true;
             }

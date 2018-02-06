@@ -1,12 +1,14 @@
 package com.fmh.app.cashtracker;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -51,9 +53,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             holder.tvBigletter.setText(bl);
         }
         holder.tvSum.setText(String.format("%.2f €", _category.getTotal()));
+        holder.ratingBar.setRating(_category.getRating());
+
+        /* color */
+        if (bl.length() > 0) {
+
+            int resId = context.getResources().getIdentifier(bl.toLowerCase(), "color", context.getPackageName());
+            int iColor = context.getResources().getColor(resId);
+            holder.tvTitle.setTextColor(iColor);
+            GradientDrawable bgShape = (GradientDrawable) holder.tvBigletter.getBackground();
+            bgShape.setColor(iColor);
+        }
 
         // Set the view to fade in
-        setFadeAnimation(holder.itemView);
+        setFadeAnimation(holder.itemView, position);
 
         holder.tvBigletter.setOnClickListener(
                 new View.OnClickListener() {
@@ -82,18 +95,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
         public TextView tvBigletter, tvTitle, tvSum;
+        public RatingBar ratingBar;
 
         public CategoryViewHolder(View v) {
             super(v);
             tvBigletter = v.findViewById(R.id.tvBigletter);
             tvTitle = v.findViewById(R.id.tvTitle);
             tvSum = v.findViewById(R.id.tvSum);
+            ratingBar = v.findViewById(R.id.ratingBar);
         }
     }
 
-    private void setFadeAnimation(View view) {
+    private void setFadeAnimation(View view, int position) {
         Animation animation = AnimationUtils.loadAnimation(this.context, R.anim.push_left_in);
         animation.setDuration(FADE_DURATION);
+        //animation.setStartOffset(position * FADE_DURATION / 4);
         view.startAnimation(animation);
     }
 

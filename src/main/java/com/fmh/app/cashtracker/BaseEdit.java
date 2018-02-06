@@ -2,6 +2,9 @@ package com.fmh.app.cashtracker;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -45,16 +48,29 @@ public class BaseEdit extends AppCompatActivity {
                 @Override
                 public void onDateSet(DatePicker arg0,
                                       int arg1, int arg2, int arg3) {
-                    // arg1 = year
-                    // arg2 = month
-                    // arg3 = day
                     calendar.set(Calendar.YEAR, arg1);
                     calendar.set(Calendar.MONTH, arg2);
                     calendar.set(Calendar.DAY_OF_MONTH, arg3);
-                    // button text
+
                     bDate.setText(DateFormat.format(calendar.getTimeInMillis()));
                 }
             };
+
+    public AlertDialog ConfirmDelete(Context context) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(R.string.message_delete);
+        builder.setTitle(R.string.action_delete);
+        builder.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        // Create the AlertDialog
+        return builder.create();
+
+    }
 
 
 }
