@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,27 +15,32 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
+import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CashList extends AppCompatActivity {
+public class CashListActivity extends BaseListActivity {
 
     public static final String CASH_ITEM = "com.fmh.app.cashtracker.CATSH_ITEM";
     public static final String CUT_CASH_ITEM = "com.fmh.app.cashtracker.CUT_CASH_ITEM";
 
     private Category _category;
-    private List<Cash> cashList = new ArrayList<>();
+    private ListMonthYear _model = new ListMonthYear();
     private RecyclerView recyclerView;
     public CashAdapter mAdapter;
     private Context context;
     private SharedPreferences preference;
     private DataBase db;
     private Menu _menu;
+    private TextView tvMonthLimit, tvYearLimit;
+    private ProgressBar pbYearLimit, pbMonthLimit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,22 +57,29 @@ public class CashList extends AppCompatActivity {
         toolbar.setTitle(_category.getTitle());
 
         getSupportActionBar().setTitle(_category.getTitle());
+        getSupportActionBar().setSubtitle(getString(R.string.app_name));
+
+        tvMonthLimit = findViewById(R.id.tvMonthLimit);
+        tvYearLimit = findViewById(R.id.tvYearLimit);
+        pbYearLimit = findViewById(R.id.pbYearLimit);
+        pbMonthLimit = findViewById(R.id.pbMonthLimit);
+
 
         preference = PreferenceManager.getDefaultSharedPreferences(context);
-        long CashId = preference.getLong(CashList.CUT_CASH_ITEM, -1);
+        long CashId = preference.getLong(CashListActivity.CUT_CASH_ITEM, -1);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         /* create with interface */
         db = new DataBase(this);
               /* set */
-        mAdapter = new CashAdapter(CashId, cashList, new CashAdapter.Listener() {
+        mAdapter = new CashAdapter(CashId, _model.data, new CashAdapter.Listener() {
             @Override
             public void onItemClick(View v, int position) {
 
                 Intent intent;
                 intent = new Intent(context, CashEdit.class);
-                intent.putExtra(CASH_ITEM, (Serializable) cashList.get(position));
+                intent.putExtra(CASH_ITEM, (Serializable) _model.data.get(position));
                 intent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                 startActivityForResult(intent, 1);
 
@@ -109,7 +120,7 @@ public class CashList extends AppCompatActivity {
 
         _menu = menu;
 
-        if (preference.getLong(CashList.CUT_CASH_ITEM, -1) > 0)
+        if (preference.getLong(CashListActivity.CUT_CASH_ITEM, -1) > 0)
             menu.findItem(R.id.action_paste).setVisible(true);
 
         SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
@@ -127,8 +138,8 @@ public class CashList extends AppCompatActivity {
         @Override
         public boolean onQueryTextChange(String newText) {
             // categoryList rebuild
-            cashList.clear();
-            db.getCashs(cashList, preference.getString("active_user", "default"), _category, newText.toLowerCase());
+            _model.data.clear();
+            db.getCashs(_model, _category, newText.toLowerCase());
             mAdapter.notifyDataSetChanged();
             return false;
         }
@@ -142,28 +153,28 @@ public class CashList extends AppCompatActivity {
         if (id == android.R.id.home) {
 
             Intent returnIntent = new Intent();
-            setResult(CategoryListActivity.RESULT_UPDATE , returnIntent);
+            setResult(CategoryListActivity.RESULT_UPDATE, returnIntent);
 
             finish();
             return true;
         }
 
         if (id == R.id.action_paste) {
-            long CashId = preference.getLong(CashList.CUT_CASH_ITEM, -1);
+            long CashId = preference.getLong(CashListActivity.CUT_CASH_ITEM, -1);
             Cash _cash = db.getCashById(CashId);
             _cash.setCategory(_category.getCategoryID());
-            cashList.add(_cash);
+            _model.data.add(_cash);
             /* update db */
             db.updateCash(_cash);
             /* update list */
-            List<Cash> tempList = new ArrayList<Cash>(cashList);
-            cashList.clear();
+            List<Cash> tempList = new ArrayList<Cash>(_model.data);
+            _model.data.clear();
             /* update list */
-            cashList = new ArrayList<Cash>(tempList);
+            _model.data = new ArrayList<Cash>(tempList);
             mAdapter.notifyDataSetChanged();
             /* update pref */
             SharedPreferences.Editor editor = preference.edit();
-            editor.putLong(CashList.CUT_CASH_ITEM, -1);
+            editor.putLong(CashListActivity.CUT_CASH_ITEM, -1);
             editor.commit();
             /* update menu */
             _menu.findItem(R.id.action_paste).setVisible(false);
@@ -179,7 +190,7 @@ public class CashList extends AppCompatActivity {
             Cash _cash = (Cash) data.getSerializableExtra(CASH_ITEM);
             if (resultCode == RESULT_OK) {
                 /* search item by id */
-                for (Cash item : cashList) {
+                for (Cash item : (List<Cash>) _model.data) {
                     if (item.getCashID() == _cash.getCashID()) {
                         item.setContent(_cash.getContent());
                         item.setCreateDate(_cash.getCreateDate());
@@ -194,10 +205,10 @@ public class CashList extends AppCompatActivity {
             if (resultCode == 3) {
                 /* delete */
                 /* search item by id */
-                for (int i = 0; i < cashList.size(); i++) {
-                    Cash item = cashList.get(i);
+                for (int i = 0; i < _model.data.size(); i++) {
+                    Cash item = (Cash) _model.data.get(i);
                     if (item.getCashID() == _cash.getCashID()) {
-                        cashList.remove(i);
+                        _model.data.remove(i);
                     }
                 }
                 /* track change */
@@ -207,22 +218,21 @@ public class CashList extends AppCompatActivity {
             if (resultCode == 4) {
                 /* cut */
                 _menu.findItem(R.id.action_paste).setVisible(true);
-                List<Cash> tempList = new ArrayList<Cash>(cashList);
-                cashList.clear();
+                List<Cash> tempList = new ArrayList<Cash>(_model.data);
+                _model.data.clear();
                 /* update list */
-                cashList = new ArrayList<Cash>(tempList);
+                _model.data = new ArrayList<Cash>(tempList);
                 /* track change */
                 mAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    public class CashAsyncTask extends AsyncTask<Object, Void, List<Cash>> {
+    public class CashAsyncTask extends AsyncTask<Object, Void, ListMonthYear> {
 
         @Override
-        protected List<Cash> doInBackground(Object... objects) {
-            db.getCashs(cashList, preference.getString("active_user", "default"), _category);
-            return null;
+        protected ListMonthYear doInBackground(Object... objects) {
+            return db.getCashs(_model, _category);
         }
 
         @Override
@@ -231,8 +241,27 @@ public class CashList extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<Cash> o) {
+        protected void onPostExecute(ListMonthYear o) {
             mAdapter.notifyDataSetChanged();
+            /* limit  */
+            double iLm = Double.parseDouble(preference.getString("limitMonth", "1000"));
+            double iLy = Double.parseDouble(preference.getString("limitYear", "12000"));
+            double progressstate = 0;
+            if (iLy < o.getYearSum()) {
+                progressstate = 100;
+            } else {
+                progressstate = o.getYearSum() * 100 / iLy;
+            }
+            AnimateProgressBar(pbYearLimit, (int) progressstate);
+            progressstate = 0;
+            if (iLm < o.getMonthSum()) {
+                progressstate = 100;
+            } else {
+                progressstate = o.getMonthSum() * 100 / iLm;
+            }
+            AnimateProgressBar(pbMonthLimit, (int) progressstate);
+            tvMonthLimit.setText(String.format("%.2f", o.getMonthSum()));
+            tvYearLimit.setText(String.format("%.2f", o.getYearSum()));
         }
     }
 

@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:gravity="right"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/p"
+            android:textColor="@color/colorAccent"
             android:textSize="20sp"
             app:layout_column="0"
             app:layout_row="0" />
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/d"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             app:layout_column="0"
             app:layout_row="1" />

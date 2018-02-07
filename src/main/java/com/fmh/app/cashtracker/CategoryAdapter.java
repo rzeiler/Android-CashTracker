@@ -1,7 +1,6 @@
 package com.fmh.app.cashtracker;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,15 +56,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.tvSum.setText(String.format("%.2f €", _category.getTotal()));
         holder.ratingBar.setRating(_category.getRating());
 
-        /* color */
-        if (bl.length() > 0) {
 
-            int resId = context.getResources().getIdentifier(bl.toLowerCase(), "color", context.getPackageName());
-            int iColor = context.getResources().getColor(resId);
-            holder.tvTitle.setTextColor(iColor);
-            GradientDrawable bgShape = (GradientDrawable) holder.tvBigletter.getBackground();
-            bgShape.setColor(iColor);
-        }
 
         // Set the view to fade in
         setFadeAnimation(holder.itemView, position);

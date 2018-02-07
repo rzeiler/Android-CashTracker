@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -37,9 +38,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CashEdit"
-           android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".CashList"
+            android:name=".CashListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Setting"
@@ -50,6 +51,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
+
     </application>
 
 </manifest>

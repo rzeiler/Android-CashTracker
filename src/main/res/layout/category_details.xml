@@ -20,43 +20,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            app:titleEnabled="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="true"
             app:toolbarId="@+id/toolbar">
 
-
-            <android.support.v7.widget.GridLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="80dp"
                 android:layout_marginLeft="70dp"
-                app:columnCount="1"
-                app:rowCount="2">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/detailsMonat"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
+                    android:padding="5dp"
                     android:text="@string/app_name"
-
-                    android:textSize="36sp"
-                    app:layout_column="0"
-                    app:layout_columnWeight="1"
-                    app:layout_row="0" />
+                    android:textAlignment="textEnd"
+                    android:textSize="36dp" />
 
                 <TextView
                     android:id="@+id/detailsJahr"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
+                    android:padding="5dp"
                     android:text="@string/app_name"
+                    android:textAlignment="textEnd"
+                    android:textSize="36dp" />
 
-                    android:textSize="36sp"
-                    app:layout_column="0"
-                    app:layout_columnWeight="1"
-                    app:layout_row="1" />
-
-            </android.support.v7.widget.GridLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

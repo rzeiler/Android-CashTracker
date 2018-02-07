@@ -47,7 +47,7 @@ public class CashEdit extends BaseEdit {
         context = this;
 
         Intent intent = getIntent();
-        _cash = (Cash) intent.getSerializableExtra(CashList.CASH_ITEM);
+        _cash = (Cash) intent.getSerializableExtra(CashListActivity.CASH_ITEM);
         _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -92,7 +92,7 @@ public class CashEdit extends BaseEdit {
 
         _menu = menu;
 
-        if (preference.getLong(CashList.CUT_CASH_ITEM, -1) > 0)
+        if (preference.getLong(CashListActivity.CUT_CASH_ITEM, -1) > 0)
             menu.findItem(R.id.action_cut).setVisible(false);
 
         return true;
@@ -100,10 +100,13 @@ public class CashEdit extends BaseEdit {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        Intent returnIntent;
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            Intent returnIntent = new Intent();
+            returnIntent = new Intent();
             setResult(RESULT_CANCELED, returnIntent);
             finish();
             return true;
@@ -112,12 +115,12 @@ public class CashEdit extends BaseEdit {
         if (id == R.id.action_cut) {
 
             SharedPreferences.Editor editor = preference.edit();
-            editor.putLong(CashList.CUT_CASH_ITEM, _cash.getCashID());
+            editor.putLong(CashListActivity.CUT_CASH_ITEM, _cash.getCashID());
             editor.commit();
 
-            Intent returnIntent = new Intent();
+            returnIntent = new Intent();
             returnIntent.putExtra("result", "Gespeichert");
-            returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
+            returnIntent.putExtra(CashListActivity.CASH_ITEM, (Serializable) _cash);
             returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
             setResult(4, returnIntent);
 
@@ -147,9 +150,9 @@ public class CashEdit extends BaseEdit {
 
             if (dbResult > 0) {
 
-                Intent returnIntent = new Intent();
+                returnIntent = new Intent();
                 returnIntent.putExtra("result", "Gespeichert");
-                returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
+                returnIntent.putExtra(CashListActivity.CASH_ITEM, (Serializable) _cash);
                 returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                 setResult(RESULT_OK, returnIntent);
 
@@ -168,9 +171,9 @@ public class CashEdit extends BaseEdit {
             dialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent returnIntent = new Intent(CashEdit.this, CashList.class);
+                    Intent  returnIntent = new Intent(CashEdit.this, CashListActivity.class);
                     returnIntent.putExtra("result", "Gelöscht");
-                    returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
+                    returnIntent.putExtra(CashListActivity.CASH_ITEM, (Serializable) _cash);
                     returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                     returnIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     setResult(3, returnIntent);

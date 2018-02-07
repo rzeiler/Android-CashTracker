@@ -1,5 +1,7 @@
 package com.fmh.app.cashtracker;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +24,7 @@ import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 
 public class CategoryListActivity extends BaseListActivity {
@@ -36,7 +39,7 @@ public class CategoryListActivity extends BaseListActivity {
     private Context context;
     private SharedPreferences preference;
     private DataBase db;
-    public TextView tvMonthLimit, tvYearLimit;
+    private TextView tvMonthLimit, tvYearLimit;
     private ProgressBar pbYearLimit, pbMonthLimit;
 
     @Override
@@ -76,7 +79,7 @@ public class CategoryListActivity extends BaseListActivity {
 
                         break;
                     default:
-                        intent = new Intent(context, CashList.class);
+                        intent = new Intent(context, CashListActivity.class);
                         intent.putExtra(CATEGORY_ITEM, (Serializable) _categoryList.data.get(position));
                         startActivityForResult(intent, 1);
                         break;
@@ -111,7 +114,12 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
+
+
+
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -163,7 +171,7 @@ public class CategoryListActivity extends BaseListActivity {
             if (resultCode == RESULT_OK) {
                 Category _category = (Category) data.getSerializableExtra(CATEGORY_ITEM);
                 /* search item by id */
-                for (Category item :   (List<Category>)_categoryList.data) {
+                for (Category item : (List<Category>) _categoryList.data) {
                     if (item.getCategoryID() == _category.getCategoryID()) {
                         item.setTitle(_category.getTitle());
                         item.setRating(_category.getRating());
