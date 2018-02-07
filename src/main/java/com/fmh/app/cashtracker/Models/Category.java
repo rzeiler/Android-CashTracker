@@ -1,4 +1,4 @@
-package com.fmh.app.cashtracker;
+package com.fmh.app.cashtracker.Models;
 
 import java.io.Serializable;
 

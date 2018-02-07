@@ -15,10 +15,12 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.fmh.app.cashtracker.Models.Category;
+
 import java.io.Serializable;
 import java.util.Calendar;
 
-import static com.fmh.app.cashtracker.CategoryList.CATEGORY_ITEM;
+import static com.fmh.app.cashtracker.CategoryListActivity.CATEGORY_ITEM;
 
 public class CategoryEdit extends BaseEdit {
 
@@ -36,7 +38,7 @@ public class CategoryEdit extends BaseEdit {
         context = this;
 
         Intent intent = getIntent();
-        _category = (Category) intent.getSerializableExtra(CategoryList.CATEGORY_ITEM);
+        _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
 
         bDate = (Button) findViewById(R.id.bDate);
         etTitle = (EditText) findViewById(R.id.etCategory);
@@ -117,7 +119,7 @@ public class CategoryEdit extends BaseEdit {
             dialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent returnIntent = new Intent(CategoryEdit.this, CategoryList.class);
+                    Intent returnIntent = new Intent(CategoryEdit.this, CategoryListActivity.class);
                     returnIntent.putExtra(CATEGORY_ITEM, (Serializable) _category);
                     returnIntent.putExtra("result", "Gelöscht");
                     returnIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

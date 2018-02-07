@@ -17,6 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.fmh.app.cashtracker.Models.Cash;
+import com.fmh.app.cashtracker.Models.Category;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,7 @@ public class CashList extends AppCompatActivity {
         context = this;
 
         Intent intent = getIntent();
-        _category = (Category) intent.getSerializableExtra(CategoryList.CATEGORY_ITEM);
+        _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
         toolbar.setTitle(_category.getTitle());
 
         getSupportActionBar().setTitle(_category.getTitle());
@@ -66,7 +69,7 @@ public class CashList extends AppCompatActivity {
                 Intent intent;
                 intent = new Intent(context, CashEdit.class);
                 intent.putExtra(CASH_ITEM, (Serializable) cashList.get(position));
-                intent.putExtra(CategoryList.CATEGORY_ITEM, (Serializable) _category);
+                intent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                 startActivityForResult(intent, 1);
 
             }
@@ -89,7 +92,7 @@ public class CashList extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(context, CashEdit.class);
                 intent.putExtra(CASH_ITEM, (Serializable) null);
-                intent.putExtra(CategoryList.CATEGORY_ITEM, (Serializable) _category);
+                intent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, 1);
             }
@@ -137,6 +140,10 @@ public class CashList extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
+
+            Intent returnIntent = new Intent();
+            setResult(CategoryListActivity.RESULT_UPDATE , returnIntent);
+
             finish();
             return true;
         }

@@ -1,4 +1,4 @@
-package com.fmh.app.cashtracker;
+package com.fmh.app.cashtracker.Models;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ public class Cash implements Serializable {
     long _Id = -1;
     String _Content;
     long _CreateDate;
-    int _Category;
+    long _Category;
     int _Repeat;
     int _IsCloned = 0;
     double _Total;
@@ -67,11 +67,11 @@ public class Cash implements Serializable {
         this._CreateDate = CreateDate;
     }
 
-    public int getCategory() {
+    public long getCategory() {
         return this._Category;
     }
 
-    public void setCategory(int Category) {
+    public void setCategory(long Category) {
         this._Category = Category;
     }
 

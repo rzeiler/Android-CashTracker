@@ -9,6 +9,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.fmh.app.cashtracker.Models.Cash;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 

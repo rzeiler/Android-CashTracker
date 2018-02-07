@@ -27,6 +27,7 @@
     <string name="message_delete">Wollen sie diesen Eintrag wirklich löschen?</string>
     <string name="label_cancel">Abbrechen</string>
 
+    <string name="label_categorys">Kategorien</string>
 
 
 </resources>

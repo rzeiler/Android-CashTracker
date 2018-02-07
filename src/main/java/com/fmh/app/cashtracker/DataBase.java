@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.fmh.app.cashtracker.Models.Cash;
+import com.fmh.app.cashtracker.Models.Category;
+import com.fmh.app.cashtracker.Models.CategoryDetailsItem;
+import com.fmh.app.cashtracker.Models.ListMonthYear;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,12 +29,12 @@ public class DataBase extends SQLiteOpenHelper {
     /* filds */
     private static final String KEY_cID = "id";
     private static final String KEY_cTITLE = "title";
-    private static final String KEY_cCREATEDATE = "int_create_date";
+    private static final String KEY_cCREATEDATE = "create_date";
     private static final String KEY_cUSER = "user";
     private static final String KEY_cRATING = "rating";
     private static final String KEY_sID = "id";
     private static final String KEY_sCONTENT = "content";
-    private static final String KEY_sCREATEDATE = "int_create_date";
+    private static final String KEY_sCREATEDATE = "create_date";
     private static final String KEY_sCATEGORY = "category";
     private static final String KEY_sREPEAT = "repeat";
     private static final String KEY_sTOTAL = "total";
@@ -37,8 +42,6 @@ public class DataBase extends SQLiteOpenHelper {
     /* table */
     private static final String TABLE_CATEGORY = "category";
     private static final String TABLE_CASH = "cash";
-
-    private static final String TABLE_CASH_MOVE = "cash_move";
 
     /* create */
     private static final String SQL_CREATE_CATEGORY = "CREATE TABLE " + TABLE_CATEGORY + "(" + KEY_cID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -52,6 +55,8 @@ public class DataBase extends SQLiteOpenHelper {
 
     private SimpleDateFormat DeDateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private SimpleDateFormat EnDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    private SimpleDateFormat Test = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public DataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -137,13 +142,15 @@ public class DataBase extends SQLiteOpenHelper {
                 _cash.setTotal(cursor.getDouble(5));
                 _cash.setIsCloned(cursor.getInt(6));
 
+                Log.w("Cash Date", Test.format(cursor.getLong(2)));
+
+
             } while (cursor.moveToNext());
         }
         cursor.close();
 
         return _cash;
     }
-
 
     public long addCash(Cash _cash) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -202,11 +209,11 @@ public class DataBase extends SQLiteOpenHelper {
         return _date;
     }
 
-    public List<Category> getCategorys(List<Category> _list, String user) {
-        return getCategorys(_list, user, "");
+    public ListMonthYear getCategorys(ListMonthYear _categoryList, String user) {
+        return getCategorys(_categoryList, user, "");
     }
 
-    public List<Category> getCategorys(List<Category> _list, String user, String filterTitel) {
+    public ListMonthYear getCategorys(ListMonthYear _categoryList, String user, String filterTitel) {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -237,82 +244,148 @@ public class DataBase extends SQLiteOpenHelper {
                 _category.setCreateDate(cursor.getLong(3));
                 _category.setRating(cursor.getInt(4));
                 _category.setUser(cursor.getString(5));
-                _list.add(_category);
+                _categoryList.data.add(_category);
                 _category = null;
 
             } while (cursor.moveToNext());
         }
         cursor.close();
+        /* get month sum */
+        String[] tableColumns = new String[]{
+                "IFNULL(SUM(a." + KEY_sTOTAL + "),0)"
+        };
+        String whereClause = "a." + KEY_sCATEGORY + "=b." + KEY_cID + " AND a." + KEY_sCREATEDATE + " >= ? AND b." + KEY_cUSER + " = ?";
 
-        return _list;
-    }
+        String[] whereArgs = new String[]{
+                String.valueOf(c.getTimeInMillis()),
+                user
+        };
 
-    public Double getSum(int Range, String user, Category category) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.DAY_OF_MONTH, 0);
-        switch (Range) {
-            case Calendar.YEAR:
-                c.set(Calendar.MONTH, 0);
-                break;
-        }
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "";
-        Double result = 0.0;
-        /* year and month */
-        Cursor cursor = null;
-        if (category == null) {
-            query = "SELECT IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.int_create_date >= ? AND b.user = ?;";
-            cursor = db.rawQuery(query, new String[]{String.valueOf(c.getTimeInMillis()), user});
-        } else {
-            query = "SELECT IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.int_create_date >= ? AND b.user = ? AND b.id = ?;";
-            cursor = db.rawQuery(query, new String[]{String.valueOf(c.getTimeInMillis()), user, String.valueOf(category.getCategoryID())});
-        }
+        cursor = db.query(TABLE_CASH + " AS a," + TABLE_CATEGORY + " AS b", tableColumns, whereClause, whereArgs,
+                null, null, null);
+
         if (cursor.moveToFirst()) {
             do {
-                result = cursor.getDouble(0);
+                _categoryList.setMonthSum(cursor.getDouble(0));
             } while (cursor.moveToNext());
         }
         cursor.close();
 
-        return result;
+        /* get year sum */
+        c.set(Calendar.MONTH, 0);
+        whereArgs = new String[]{
+                String.valueOf(c.getTimeInMillis()),
+                user
+        };
+
+        cursor = db.query(TABLE_CASH + " AS a," + TABLE_CATEGORY + " AS b", tableColumns, whereClause, whereArgs,
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                _categoryList.setYearSum(cursor.getDouble(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return _categoryList;
     }
 
-    public List<CategorySum> getCategorySum(List<CategorySum> _list, String user, Category category) {
+    public ListMonthYear getCategoryDetails(ListMonthYear _model, Category category) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.DAY_OF_MONTH, 0);
-        c.set(Calendar.MONTH, 0);
-        c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 3);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.DAY_OF_MONTH, 1);
 
         SQLiteDatabase db = this.getReadableDatabase();
-        /* year and month */
         Cursor cursor = null;
+
+        /* get month sum */
+        String[] tableColumns = new String[]{
+                "IFNULL(SUM(" + KEY_sTOTAL + "),0)"
+        };
+        String whereClause = KEY_sCATEGORY + "=? AND " + KEY_sCREATEDATE + " >= ?";
+
+        String[] whereArgs = new String[]{
+                String.valueOf(category.getCategoryID()),
+                String.valueOf(c.getTimeInMillis())
+        };
+
+        Log.w("und", Test.format(c.getTimeInMillis()));
+
+
+        cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                _model.setMonthSum(cursor.getDouble(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        /* get year sum */
+        c.set(Calendar.MONTH, 0);
+
+        Log.w("und", Test.format(c.getTimeInMillis()));
+
+        whereArgs = new String[]{
+                String.valueOf(category.getCategoryID()),
+                String.valueOf(c.getTimeInMillis())
+        };
+
+        cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                _model.setYearSum(cursor.getDouble(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        String _query = "int_create_date";
+        _query  = "SELECT " + _query + ", IFNULL(SUM(total),0) FROM cash WHERE category=? GROUP BY "
+                + _query + " ORDER BY "+ _query +" DESC;";
+        cursor = db.rawQuery(_query, new String[]{String.valueOf(category.getCategoryID())});
+
+        if (cursor.moveToFirst()) {
+            do {
+             Log.w("Mes",   String.format("%s %s", cursor.getString(0),cursor.getDouble(1)));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+
+
+        /* year and month */
+
+        c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 3);
+
         String striftime = "strftime('%Y',datetime(a.int_create_date/1000, 'unixepoch')), strftime('%m',datetime(a.int_create_date/1000, 'unixepoch')) ";
         String query = "SELECT " + striftime + ", IFNULL(SUM(a.total),0) FROM cash AS a, category AS b WHERE a.category=b.id AND a.category = ? AND a.int_create_date >= ? AND b.user = ? GROUP BY " + striftime + " ORDER BY strftime('%Y',datetime(a.int_create_date/1000, 'unixepoch')) DESC;";
-        cursor = db.rawQuery(query, new String[]{String.valueOf(category.getCategoryID()), String.valueOf(c.getTimeInMillis()), user});
+        cursor = db.rawQuery(query, new String[]{String.valueOf(category.getCategoryID()), String.valueOf(c.getTimeInMillis()), category.getUser()});
 
         if (cursor.moveToFirst()) {
             do {
                 /* get name */
-                c.set(Calendar.MONTH, cursor.getInt(1));
+                c = Calendar.getInstance();
+                c.set(Calendar.MONTH, cursor.getInt(1) );
                 c.set(Calendar.YEAR, cursor.getInt(0));
+                c.set(Calendar.DAY_OF_MONTH, 1);
                 String month = c.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
                 /* set item */
-                CategorySum _categorySum = new CategorySum(String.format("%s %s", cursor.getString(0), month), cursor.getDouble(2));
-                _list.add(_categorySum);
+                CategoryDetailsItem _categorySum = new CategoryDetailsItem(String.format("%s %s", cursor.getString(0), month), cursor.getDouble(2));
+                _model.data.add(_categorySum);
                 _categorySum = null;
             } while (cursor.moveToNext());
         }
         cursor.close();
 
-        return _list;
-    }
 
-    public Double getSum(int Range, String user) {
-        return getSum(Range, user, null);
+        return _model;
     }
 
     public List<Cash> getCashs(List<Cash> cashList, String user, Category category) {
@@ -351,6 +424,9 @@ public class DataBase extends SQLiteOpenHelper {
                 _cash.setTotal(cursor.getDouble(5));
                 _cash.setIsCloned(cursor.getInt(6));
                 cashList.add(_cash);
+
+                Log.w("Cash Date", Test.format(cursor.getLong(2)));
+
             } while (cursor.moveToNext());
         }
         cursor.close();

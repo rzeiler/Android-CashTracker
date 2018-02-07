@@ -11,6 +11,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.fmh.app.cashtracker.Models.Category;
+
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private static final long FADE_DURATION = 500;
-    private List<Category> categoryList;
+    private List<?> categoryList;
     private Listener mListener;
     private Context context;
 
@@ -29,7 +31,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     //constructor
-    public CategoryAdapter(List<Category> categoryList, Listener AdapterClickListener, Context context) {
+    public CategoryAdapter(List<?> categoryList, Listener AdapterClickListener, Context context) {
         this.categoryList = categoryList;
         this.mListener = AdapterClickListener;
         this.context = context;
@@ -44,7 +46,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public void onBindViewHolder(CategoryAdapter.CategoryViewHolder holder, final int position) {
-        Category _category = categoryList.get(position);
+        Category _category = (Category) categoryList.get(position);
 
         String bl = _category.getTitle();
         holder.tvTitle.setText(bl);

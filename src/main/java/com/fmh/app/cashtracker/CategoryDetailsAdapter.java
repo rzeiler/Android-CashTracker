@@ -10,6 +10,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.fmh.app.cashtracker.Models.CategoryDetailsItem;
+
 import java.util.List;
 
 /**
@@ -19,12 +21,12 @@ import java.util.List;
 class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter.CategoryViewHolder> {
 
     private static final long FADE_DURATION = 500;
-    private List<CategorySum> _categorySumList;
+    private List<CategoryDetailsItem> _categorySumList;
     private Context context;
     private double _maxTotal;
 
     //constructor
-    public CategoryDetailsAdapter(List<CategorySum> categorySumList, Context context, double maxTotal) {
+    public CategoryDetailsAdapter(List<CategoryDetailsItem> categorySumList, Context context, double maxTotal) {
         this._categorySumList = categorySumList;
         this._maxTotal = maxTotal;
         this.context = context;
@@ -39,7 +41,7 @@ class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter
 
     @Override
     public void onBindViewHolder(CategoryDetailsAdapter.CategoryViewHolder holder, final int position) {
-        CategorySum _categorySumItem = _categorySumList.get(position);
+        CategoryDetailsItem _categorySumItem = _categorySumList.get(position);
         holder.tvDate.setText(_categorySumItem.getMonth());
         holder.tvSum.setText(String.format("%.2f €", _categorySumItem.getTotal()));
         Double progress = _categorySumItem.getTotal() / _maxTotal * 100;

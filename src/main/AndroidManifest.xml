@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CategoryList"
+            android:name=".CategoryListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -24,13 +24,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CategoryDetails"
+            android:name=".CategoryDetailsActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".CategoryList"
+            android:parentActivityName=".CategoryListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fmh.app.cashtracker.CategoryList" />
+                android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
         <activity
             android:name=".CategoryEdit"
@@ -44,11 +44,11 @@
         <activity
             android:name=".Setting"
             android:label="@string/title_activity_setting"
-            android:parentActivityName=".CategoryList"
+            android:parentActivityName=".CategoryListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fmh.app.cashtracker.CategoryList" />
+                android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
     </application>
 

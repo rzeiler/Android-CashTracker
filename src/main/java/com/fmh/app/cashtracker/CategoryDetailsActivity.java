@@ -17,21 +17,23 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fmh.app.cashtracker.Models.Category;
+import com.fmh.app.cashtracker.Models.CategoryDetailsItem;
+import com.fmh.app.cashtracker.Models.ListMonthYear;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import static com.fmh.app.cashtracker.CategoryList.CATEGORY_ITEM;
+import static com.fmh.app.cashtracker.CategoryListActivity.CATEGORY_ITEM;
 
-public class CategoryDetails extends AppCompatActivity {
+public class CategoryDetailsActivity extends AppCompatActivity {
 
     private Context context;
     private Category _category;
     private Boolean _hasChange = false;
     private TextView _detailsMonat, _detailsJahr;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private List<CategorySum> categorySumList = new ArrayList<>();
+    private ListMonthYear _model = new ListMonthYear();
     public CategoryDetailsAdapter _adapter;
 
     @Override
@@ -57,16 +59,16 @@ public class CategoryDetails extends AppCompatActivity {
         SharedPreferences _sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         DataBase db = new DataBase(this);
-        categorySumList = db.getCategorySum(categorySumList, _sp.getString("active_user", "default"), _category);
+        _model = db.getCategoryDetails(_model,_category);
 
         double maxTotal = 0.0;
 
-        for (CategorySum item : categorySumList) {
+        for (CategoryDetailsItem item : (List<CategoryDetailsItem>) _model.data) {
             if (maxTotal < item.getTotal())
                 maxTotal = item.getTotal();
         }
 
-        _adapter = new CategoryDetailsAdapter(categorySumList, context, maxTotal);
+        _adapter = new CategoryDetailsAdapter(_model.data, context, maxTotal);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -78,14 +80,12 @@ public class CategoryDetails extends AppCompatActivity {
 
         _adapter.notifyDataSetChanged();
 
-        _detailsMonat = (TextView) findViewById(R.id.detailsMonat);
-        _detailsJahr = (TextView) findViewById(R.id.detailsJahr);
+        _detailsMonat = findViewById(R.id.detailsMonat);
+        _detailsJahr = findViewById(R.id.detailsJahr);
 
-        Double sumYear = db.getSum(Calendar.YEAR, _sp.getString("_active_user", "default"), _category);
-        Double sumMonth = db.getSum(Calendar.MONTH, _sp.getString("_active_user", "default"), _category);
+        _detailsJahr.setText(String.format("Jahr   %.2f €", _model.getYearSum()));
+        _detailsMonat.setText(String.format("Monat %.2f €", _model.getMonthSum()));
 
-        _detailsJahr.setText(String.format("Jahr   %.2f €", sumYear));
-        _detailsMonat.setText(String.format("Monat %.2f €", sumMonth));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

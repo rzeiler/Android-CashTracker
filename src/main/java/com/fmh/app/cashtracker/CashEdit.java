@@ -16,6 +16,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.fmh.app.cashtracker.Models.Cash;
+import com.fmh.app.cashtracker.Models.Category;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +48,7 @@ public class CashEdit extends BaseEdit {
 
         Intent intent = getIntent();
         _cash = (Cash) intent.getSerializableExtra(CashList.CASH_ITEM);
-        _category = (Category) intent.getSerializableExtra(CategoryList.CATEGORY_ITEM);
+        _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
         getSupportActionBar().setSubtitle(_category.getTitle());
@@ -97,9 +100,6 @@ public class CashEdit extends BaseEdit {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
@@ -118,7 +118,7 @@ public class CashEdit extends BaseEdit {
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result", "Gespeichert");
             returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
-            returnIntent.putExtra(CategoryList.CATEGORY_ITEM, (Serializable) _category);
+            returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
             setResult(4, returnIntent);
 
             finish();
@@ -150,7 +150,7 @@ public class CashEdit extends BaseEdit {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", "Gespeichert");
                 returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
-                returnIntent.putExtra(CategoryList.CATEGORY_ITEM, (Serializable) _category);
+                returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                 setResult(RESULT_OK, returnIntent);
 
                 finish();
@@ -171,7 +171,7 @@ public class CashEdit extends BaseEdit {
                     Intent returnIntent = new Intent(CashEdit.this, CashList.class);
                     returnIntent.putExtra("result", "Gelöscht");
                     returnIntent.putExtra(CashList.CASH_ITEM, (Serializable) _cash);
-                    returnIntent.putExtra(CategoryList.CATEGORY_ITEM, (Serializable) _category);
+                    returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);
                     returnIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     setResult(3, returnIntent);
 

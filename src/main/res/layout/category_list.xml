@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fmh.app.cashtracker.CategoryList">
+    tools:context="com.fmh.app.cashtracker.CategoryListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:background="@color/colorPrimary"

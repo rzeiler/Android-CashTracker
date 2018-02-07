@@ -1,22 +1,22 @@
-package com.fmh.app.cashtracker;
+package com.fmh.app.cashtracker.Models;
 
 /**
  * Created by ralf on 05.02.18.
  */
 
-public class CategorySum {
+public class CategoryDetailsItem {
 
     // private variables
     String _Month;
     double _Total;
 
     // Empty constructor
-    public CategorySum() {
+    public CategoryDetailsItem() {
 
     }
 
     // constructor
-    public CategorySum(String Month, double Total) {
+    public CategoryDetailsItem(String Month, double Total) {
         this._Month = Month;
         this._Total = Total;
     }

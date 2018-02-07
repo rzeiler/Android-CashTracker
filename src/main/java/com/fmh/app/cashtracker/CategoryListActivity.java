@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,21 +15,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.fmh.app.cashtracker.Models.Category;
+import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryList extends AppCompatActivity {
+public class CategoryListActivity extends BaseListActivity {
 
     public static final String CATEGORY_ITEM = "com.fmh.app.cashtracker.CATEGORY_ITEM";
 
-    private List<Category> categoryList = new ArrayList<>();
+    public static final Integer RESULT_UPDATE = 3;
+
+    private ListMonthYear _categoryList = new ListMonthYear();
     private RecyclerView recyclerView;
     public CategoryAdapter mAdapter;
     private Context context;
     private SharedPreferences preference;
     private DataBase db;
+    public TextView tvMonthLimit, tvYearLimit;
+    private ProgressBar pbYearLimit, pbMonthLimit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,32 +48,40 @@ public class CategoryList extends AppCompatActivity {
 
         context = this;
 
-        getSupportActionBar().setTitle(getString(R.string.app_name));
+        getSupportActionBar().setTitle(getString(R.string.label_categorys));
+        getSupportActionBar().setSubtitle(getString(R.string.app_name));
+
+        tvMonthLimit = findViewById(R.id.tvMonthLimit);
+        tvYearLimit = findViewById(R.id.tvYearLimit);
+        pbYearLimit = findViewById(R.id.pbYearLimit);
+        pbMonthLimit = findViewById(R.id.pbMonthLimit);
 
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         /* create with interface */
-        mAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.Listener() {
+        mAdapter = new CategoryAdapter(_categoryList.data, new CategoryAdapter.Listener() {
             @Override
             public void onItemClick(View v, int position) {
+
 
                 Intent intent;
 
                 switch (v.getId()) {
                     case R.id.tvBigletter:
 
-                        intent = new Intent(context, CategoryDetails.class);
-                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryList.get(position));
+                        intent = new Intent(context, CategoryDetailsActivity.class);
+                        intent.putExtra(CATEGORY_ITEM, (Serializable) _categoryList.data.get(position));
                         startActivityForResult(intent, 1);
 
                         break;
                     default:
                         intent = new Intent(context, CashList.class);
-                        intent.putExtra(CATEGORY_ITEM, (Serializable) categoryList.get(position));
+                        intent.putExtra(CATEGORY_ITEM, (Serializable) _categoryList.data.get(position));
                         startActivityForResult(intent, 1);
                         break;
                 }
+
 
             }
         }, context);
@@ -81,7 +96,6 @@ public class CategoryList extends AppCompatActivity {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         db = new DataBase(this);
-
 
         mAdapter.notifyDataSetChanged();
 
@@ -119,8 +133,8 @@ public class CategoryList extends AppCompatActivity {
         @Override
         public boolean onQueryTextChange(String newText) {
             // categoryList rebuild
-            categoryList.clear();
-            db.getCategorys(categoryList, preference.getString("active_user", "default"), newText.toLowerCase());
+            _categoryList.data.clear();
+            db.getCategorys(_categoryList, preference.getString("active_user", "default"), newText.toLowerCase());
             mAdapter.notifyDataSetChanged();
             return false;
         }
@@ -144,11 +158,12 @@ public class CategoryList extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 Category _category = (Category) data.getSerializableExtra(CATEGORY_ITEM);
                 /* search item by id */
-                for (Category item : categoryList) {
+                for (Category item :   (List<Category>)_categoryList.data) {
                     if (item.getCategoryID() == _category.getCategoryID()) {
                         item.setTitle(_category.getTitle());
                         item.setRating(_category.getRating());
@@ -158,15 +173,19 @@ public class CategoryList extends AppCompatActivity {
                 /* track change */
                 mAdapter.notifyDataSetChanged();
             }
+
+            if (resultCode == RESULT_UPDATE) {
+                _categoryList.data.clear();
+                new CategoryAsyncTask().execute();
+            }
         }
     }
 
-    public class CategoryAsyncTask extends AsyncTask<Object, Void, List<Category>> {
+    public class CategoryAsyncTask extends AsyncTask<Object, Void, ListMonthYear> {
 
         @Override
-        protected List<Category> doInBackground(Object... objects) {
-            db.getCategorys(categoryList, preference.getString("active_user", "default"));
-            return null;
+        protected ListMonthYear doInBackground(Object... objects) {
+            return db.getCategorys(_categoryList, preference.getString("active_user", "default"));
         }
 
         @Override
@@ -175,8 +194,27 @@ public class CategoryList extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<Category> o) {
+        protected void onPostExecute(ListMonthYear o) {
             mAdapter.notifyDataSetChanged();
+            /* limit  */
+            double iLm = Double.parseDouble(preference.getString("limitMonth", "1000"));
+            double iLy = Double.parseDouble(preference.getString("limitYear", "12000"));
+            double progressstate = 0;
+            if (iLy < o.getYearSum()) {
+                progressstate = 100;
+            } else {
+                progressstate = o.getYearSum() * 100 / iLy;
+            }
+            AnimateProgressBar(pbYearLimit, (int) progressstate);
+            progressstate = 0;
+            if (iLm < o.getMonthSum()) {
+                progressstate = 100;
+            } else {
+                progressstate = o.getMonthSum() * 100 / iLm;
+            }
+            AnimateProgressBar(pbMonthLimit, (int) progressstate);
+            tvMonthLimit.setText(String.format("%.2f", o.getMonthSum()));
+            tvYearLimit.setText(String.format("%.2f", o.getYearSum()));
         }
     }
 
