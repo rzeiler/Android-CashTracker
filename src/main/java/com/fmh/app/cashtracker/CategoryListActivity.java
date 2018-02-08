@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,11 +21,14 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class CategoryListActivity extends BaseListActivity {
@@ -114,10 +118,7 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
-
-
-
-
+        //new CheckRepeats().execute(db, this);
     }
 
 
@@ -224,6 +225,70 @@ public class CategoryListActivity extends BaseListActivity {
             tvMonthLimit.setText(String.format("%.2f", o.getMonthSum()));
             tvYearLimit.setText(String.format("%.2f", o.getYearSum()));
         }
+    }
+
+    private class CheckRepeats extends AsyncTask<Object, Integer, Integer> {
+
+        private View v;
+
+        @Override
+        protected Integer doInBackground(Object... params) {
+            v = (View) params[1];
+            DataBase db = (DataBase) params[0];
+            Calendar c, b;
+            Integer r = 0;
+            for (int i = 1; i < 4; i++) {
+                c = Calendar.getInstance();
+                if (i == 1) {
+                    c.set(Calendar.WEEK_OF_YEAR, c.get(Calendar.WEEK_OF_YEAR) - 1);
+                }
+                if (i == 2) {
+                    c.set(Calendar.MONTH, c.get(Calendar.MONTH) - 1);
+                }
+                if (i == 3) {
+                    c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
+                }
+
+                List<Cash> lc = new ArrayList<>(); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
+                for (Cash cash : lc) {
+                    b = Calendar.getInstance();
+                    cash.setIsCloned(1);
+
+                    if (db.updateCash(cash) > 0) {
+                        b.setTime(new Date(cash.getCreateDate()));
+
+                        if (i == 1) {
+                            b.set(Calendar.WEEK_OF_YEAR, b.get(Calendar.WEEK_OF_YEAR) + 1);
+                        }
+                        if (i == 2) {
+                            b.set(Calendar.MONTH, b.get(Calendar.MONTH) + 1);
+                        }
+                        if (i == 3) {
+                            b.set(Calendar.YEAR, b.get(Calendar.YEAR) + 1);
+                        }
+
+                        r++;
+                        Cash nc = new Cash(cash.getContent(), b.getTimeInMillis(),  cash.getCategory(), cash.getRepeat(), cash.getTotal(), 0);
+                        db.addCash(nc);
+                    }
+                }
+            }
+            return r;
+        }
+
+        protected void onPostExecute(Integer b) {
+            if (b > 0) {
+                Snackbar.make(v, String.format(getString(R.string.notification_repeat_find), b), Snackbar.LENGTH_LONG).setAction("Ok", new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        _categoryList.data.clear();
+                        new CategoryAsyncTask().execute();
+                    }
+                }).show();
+            }
+        }
+
     }
 
 }

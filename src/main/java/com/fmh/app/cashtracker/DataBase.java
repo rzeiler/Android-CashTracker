@@ -389,10 +389,11 @@ public class DataBase extends SQLiteOpenHelper {
                 KEY_sTOTAL,
                 KEY_sISCLONED
         };
-        String whereClause = String.format("%s = ?", KEY_sCATEGORY);
+        String whereClause = KEY_sCATEGORY + " = ? AND "+ KEY_sCONTENT +" LIKE ? ";
 
         String[] whereArgs = new String[]{
-                String.valueOf(category.getCategoryID())
+                String.valueOf(category.getCategoryID()),
+                filterTitel + "%"
         };
 
         Cursor cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
@@ -409,9 +410,6 @@ public class DataBase extends SQLiteOpenHelper {
                 _cash.setTotal(cursor.getDouble(5));
                 _cash.setIsCloned(cursor.getInt(6));
                 _model.data.add(_cash);
-
-                Log.w("Cash Date", cursor.getString(1) + " = " + Test.format(cursor.getLong(2)) + " = " + String.format("%s", cursor.getLong(2)));
-
             } while (cursor.moveToNext());
         }
         cursor.close();

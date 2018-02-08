@@ -22,7 +22,7 @@ public class Cash implements Serializable {
     }
 
     // constructor
-    public Cash(String Title, long CreateDate, int Category, int Repeat, double Total, int IsCloned) {
+    public Cash(String Title, long CreateDate, long Category, int Repeat, double Total, int IsCloned) {
         this._Content = Title;
         this._CreateDate = CreateDate;
         this._Category = Category;
@@ -32,7 +32,7 @@ public class Cash implements Serializable {
     }
 
     // constructor
-    public Cash(long Id, String Title, long CreateDate, int Category, int Rating, double Total, int IsCloned) {
+    public Cash(long Id, String Title, long CreateDate, long Category, int Rating, double Total, int IsCloned) {
         this._Id = Id;
         this._Content = Title;
         this._CreateDate = CreateDate;
