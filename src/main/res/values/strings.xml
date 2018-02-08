@@ -13,7 +13,6 @@
     <string name="label_cashs">Ausgaben %1$s</string>
 
 
-
     <string name="label_sum">Summe</string>
     <string name="label_currency">0.00</string>
     <string name="label_repeat">Wiederholen</string>
@@ -32,5 +31,8 @@
 
 
     <string name="notification_repeat_find">%1$d neue Ausgaben eingestellt.</string>
+
+    <string name="notification_alert_title">Achtung</string>
+    <string name="notification_restore_message">Durch das wiederherstellen werden alle Daten in datenbank zuerst gelöscht! Wollen Sie das tun?</string>
 
 </resources>

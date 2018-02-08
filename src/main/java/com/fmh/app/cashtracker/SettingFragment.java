@@ -1,20 +1,23 @@
 package com.fmh.app.cashtracker;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
@@ -36,6 +39,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
     private SharedPreferences preference;
     private Context context;
+    private ProgressDialog progressDialog;
 
     public SettingFragment() {
     }
@@ -56,18 +60,56 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         preference = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preference.registerOnSharedPreferenceChangeListener(this);
 
-        Preference btnBackup = findPreference("btnBackup");
-        btnBackup.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        Preference btnRestore = findPreference("btnRestore");
+        btnRestore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
             @Override
             public boolean onPreferenceClick(Preference preference) {
 
-                Intent intent = new Intent()
-                        .setType("*/*")
-                        .setAction(Intent.ACTION_GET_CONTENT);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.notification_restore_message);
+                builder.setTitle(R.string.notification_alert_title);
+                builder.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
-                startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
+                        Intent intent = new Intent()
+                                .setType("*/*.json")
+                                .setAction(Intent.ACTION_GET_CONTENT);
+
+                        startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
+                    }
+
+                });
+                // Create the AlertDialog
+                builder.create();
+                builder.show();
+
 
                 return true;
+            }
+        });
+
+        Preference btnBackup = findPreference("btnBackup");
+        btnBackup.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+
+                /*Intent intent = new Intent()
+                        .setAction(Intent.ACTION_GET_CONTENT);
+                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
+                        + "/");
+                intent.setDataAndType(uri, "");
+                startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 100);
+*/
+
+                return false;
             }
         });
 
@@ -93,7 +135,9 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
             DataBase _db = new DataBase(getActivity());
             new RestoreDataBase(_db).execute(content);
 
-            Toast.makeText(getActivity(), String.format("DATEI '%s' (%d) = (%d) = %s", uri, requestCode, requestCode, content), Toast.LENGTH_SHORT).show();
+            showProgressDialog();
+            progressDialog.setTitle("Wiederherstellung");
+
         }
     }
 
@@ -107,6 +151,23 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
             stringBuilder.append(line);
         }
         return stringBuilder.toString();
+    }
+
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMax(100);
+        progressDialog.setMessage("");
+        progressDialog.setTitle("Wiederherstellung");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Schließen", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                progressDialog.dismiss();
+            }
+        });
+        progressDialog.show();
+        progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
     }
 
     public class RestoreDataBase extends AsyncTask<Object, Integer, Integer> {
@@ -211,11 +272,12 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
         protected void onProgressUpdate(Integer... progress) {
             super.onProgressUpdate(progress);
-
+            progressDialog.setProgress(progress[0]);
         }
 
         protected void onPostExecute(Integer i) {
-            Toast.makeText(getActivity(), "Wiederherstellung abgeschloßen.", Toast.LENGTH_SHORT).show();
+            progressDialog.setProgress(100);
+            progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
         }
     }
 
