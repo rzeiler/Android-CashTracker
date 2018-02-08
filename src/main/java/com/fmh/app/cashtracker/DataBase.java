@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -491,4 +492,48 @@ public class DataBase extends SQLiteOpenHelper {
 
         return _model;
     }
+
+    public List<Cash> getCashs(int repeat, long milliseconds) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Cash> _data = new ArrayList<Cash>();
+
+        String[] tableColumns = new String[]{
+                KEY_sID,
+                KEY_sCONTENT,
+                KEY_sCREATEDATE,
+                KEY_sCATEGORY,
+                KEY_sREPEAT,
+                KEY_sTOTAL,
+                KEY_sISCLONED
+        };
+
+        String whereClause = KEY_sISCLONED + " = ? AND " + KEY_sREPEAT + " = ? AND " + KEY_sCREATEDATE + " <= ? ";
+
+
+        String[] whereArgs = new String[]{
+                "0", String.valueOf(repeat), String.valueOf(milliseconds)
+        };
+
+        Cursor cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
+                null, null, KEY_sCREATEDATE + " DESC");
+
+        if (cursor.moveToFirst()) {
+            do {
+                Cash _cash = new Cash();
+                _cash.setCashID(cursor.getInt(0));
+                _cash.setContent(cursor.getString(1));
+                _cash.setCreateDate(cursor.getLong(2));
+                _cash.setCategory(cursor.getInt(3));
+                _cash.setRepeat(cursor.getInt(4));
+                _cash.setTotal(cursor.getDouble(5));
+                _cash.setIsCloned(cursor.getInt(6));
+                _data.add(_cash);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return _data;
+    }
+
+
 }

@@ -118,7 +118,7 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
-        //new CheckRepeats().execute(db, this);
+        new CheckRepeats().execute(db, recyclerView  );
     }
 
 
@@ -249,7 +249,7 @@ public class CategoryListActivity extends BaseListActivity {
                     c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
                 }
 
-                List<Cash> lc = new ArrayList<>(); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
+                List<Cash> lc = db.getCashs(i,c.getTimeInMillis()); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
                 for (Cash cash : lc) {
                     b = Calendar.getInstance();
                     cash.setIsCloned(1);
@@ -267,9 +267,10 @@ public class CategoryListActivity extends BaseListActivity {
                             b.set(Calendar.YEAR, b.get(Calendar.YEAR) + 1);
                         }
 
-                        r++;
+
                         Cash nc = new Cash(cash.getContent(), b.getTimeInMillis(),  cash.getCategory(), cash.getRepeat(), cash.getTotal(), 0);
-                        db.addCash(nc);
+                        if(db.addCash(nc) > 0)
+                            r++;
                     }
                 }
             }
