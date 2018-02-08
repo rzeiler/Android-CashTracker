@@ -52,10 +52,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         if (bl.length() > 0) {
             bl = bl.substring(0, 1).toUpperCase();
             holder.tvBigletter.setText(bl);
+            holder.tvBigletter.setTextColor(getColorByLetter(bl));
         }
         holder.tvSum.setText(String.format("%.2f €", _category.getTotal()));
         holder.ratingBar.setRating(_category.getRating());
-
 
 
         // Set the view to fade in
@@ -81,6 +81,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     }
 
+    private int getColorByLetter(String letter) {
+        int resId = context.getResources().getIdentifier(letter.toLowerCase(), "color", context.getPackageName());
+        return context.getResources().getColor(resId);
+    }
+
     @Override
     public int getItemCount() {
         return categoryList.size();
@@ -102,7 +107,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private void setFadeAnimation(View view, int position) {
         Animation animation = AnimationUtils.loadAnimation(this.context, R.anim.push_left_in);
         animation.setDuration(FADE_DURATION);
-        //animation.setStartOffset(position * FADE_DURATION / 4);
         view.startAnimation(animation);
     }
 

@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:fitsSystemWindows="true"
-    tools:context="com.fmh.app.cashtracker.CategoryDetails">
+    tools:context="com.fmh.app.cashtracker.CategoryDetailsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -29,13 +28,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="80dp"
-                android:layout_marginLeft="70dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/detailsMonat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:padding="5dp"
                     android:text="@string/app_name"
                     android:textAlignment="textEnd"
@@ -45,10 +44,18 @@
                     android:id="@+id/detailsJahr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:padding="5dp"
                     android:text="@string/app_name"
                     android:textAlignment="textEnd"
                     android:textSize="36dp" />
+
+                <com.fmh.app.cashtracker.LineChart
+                    android:id="@+id/LineChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp" />
+
 
             </LinearLayout>
 

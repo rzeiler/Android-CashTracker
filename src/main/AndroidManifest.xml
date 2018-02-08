@@ -51,7 +51,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
-
     </application>
 
 </manifest>

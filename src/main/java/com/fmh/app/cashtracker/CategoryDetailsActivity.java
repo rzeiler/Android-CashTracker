@@ -3,6 +3,7 @@ package com.fmh.app.cashtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -14,6 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,8 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ListMonthYear _model = new ListMonthYear();
     public CategoryDetailsAdapter _adapter;
+    private Paint mTextPaint;
+    private float mTextHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +64,17 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         SharedPreferences _sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         DataBase db = new DataBase(this);
-        _model = db.getCategoryDetails(_model,_category);
+        _model = db.getCategoryDetails(_model, _category);
 
         double maxTotal = 0.0;
+        LineChart lineChart = findViewById(R.id.LineChart);
 
         for (CategoryDetailsItem item : (List<CategoryDetailsItem>) _model.data) {
             if (maxTotal < item.getTotal())
                 maxTotal = item.getTotal();
+            lineChart.addItem((float) item.getTotal());
         }
+        lineChart.setMax((float) maxTotal);
 
         _adapter = new CategoryDetailsAdapter(_model.data, context, maxTotal);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -102,14 +110,15 @@ public class CategoryDetailsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Animation animation = AnimationUtils.loadAnimation(this.context, R.anim.push_bottom_in);
+        animation.setDuration(500);
+        lineChart.startAnimation(animation);
+
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
