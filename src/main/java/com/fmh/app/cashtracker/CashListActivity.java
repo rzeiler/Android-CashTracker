@@ -56,7 +56,7 @@ public class CashListActivity extends BaseListActivity {
         _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
         toolbar.setTitle(_category.getTitle());
 
-        getSupportActionBar().setTitle(_category.getTitle());
+        getSupportActionBar().setTitle(String.format(getString(R.string.label_cashs), _category.getTitle()));
         getSupportActionBar().setSubtitle(getString(R.string.app_name));
 
         tvMonthLimit = findViewById(R.id.tvMonthLimit);

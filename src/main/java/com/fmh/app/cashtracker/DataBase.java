@@ -13,10 +13,12 @@ import com.fmh.app.cashtracker.Models.CategoryDetailsItem;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by ralf on 01.02.18.
@@ -389,12 +391,42 @@ public class DataBase extends SQLiteOpenHelper {
                 KEY_sTOTAL,
                 KEY_sISCLONED
         };
-        String whereClause = KEY_sCATEGORY + " = ? AND "+ KEY_sCONTENT +" LIKE ? ";
+        String whereClause = "";
 
-        String[] whereArgs = new String[]{
-                String.valueOf(category.getCategoryID()),
-                filterTitel + "%"
-        };
+        ArrayList<String> whereArgList = new ArrayList<String>();
+        whereArgList.add(String.valueOf(category.getCategoryID()));
+
+        Pattern pNumber = Pattern.compile("[0-9]{1,9}.[0-9]{0,2}+");
+        Matcher mNumber = pNumber.matcher(filterTitel);
+        while (mNumber.find()) {
+            whereClause += "(cast(" + KEY_sTOTAL + " as text) LIKE ? OR ";
+            whereArgList.add(mNumber.group() + "%");
+
+            whereClause += "cast(" + KEY_sTOTAL + " as text) LIKE ? OR ";
+            whereArgList.add("%" + mNumber.group());
+
+            whereClause += "cast(" + KEY_sTOTAL + " as text) LIKE ? OR ";
+            whereArgList.add("%" + mNumber.group() + "%");
+
+            whereClause += KEY_sTOTAL + "= ?) AND ";
+            whereArgList.add(mNumber.group());
+
+        }
+
+        Pattern pString = Pattern.compile("[a-zA-Z]+");
+        Matcher mString = pString.matcher(filterTitel);
+        while (mString.find()) {
+            whereClause += KEY_sCONTENT + " LIKE ? AND ";
+            whereArgList.add(mString.group().trim() + "%");
+        }
+
+        if (whereClause.contains("AND")) {
+            whereClause = KEY_sCATEGORY + " = ? AND (" + whereClause.substring(0, whereClause.length() - 5) + ")";
+        } else {
+            whereClause = KEY_sCATEGORY + " = ?";
+        }
+
+        String[] whereArgs = whereArgList.toArray(new String[whereArgList.size()]);
 
         Cursor cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
                 null, null, KEY_sCREATEDATE + " DESC");
@@ -430,7 +462,7 @@ public class DataBase extends SQLiteOpenHelper {
                 String.valueOf(c.getTimeInMillis()),
         };
 
-        cursor = db.query(TABLE_CASH , tableColumns, whereClause, whereArgs,
+        cursor = db.query(TABLE_CASH, tableColumns, whereClause, whereArgs,
                 null, null, KEY_sCREATEDATE + " DESC");
 
         if (cursor.moveToFirst()) {
