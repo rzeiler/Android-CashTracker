@@ -28,10 +28,8 @@
 
     <string name="message_delete">Wollen sie diesen Eintrag wirklich löschen?</string>
     <string name="label_cancel">Abbrechen</string>
-
-
+    <string name="notification_wrong_backup_file">Die ausgewählte Datei ist keine gültige Backup Datei!</string>
     <string name="notification_repeat_find">%1$d neue Ausgaben eingestellt.</string>
-
     <string name="notification_alert_title">Achtung</string>
     <string name="notification_restore_message">Durch das wiederherstellen werden alle Daten in datenbank zuerst gelöscht! Wollen Sie das tun?</string>
 

@@ -13,14 +13,18 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
+import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -79,7 +86,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                         Intent intent = new Intent()
-                                .setType("*/*.json")
+                                .setType("*/*")
                                 .setAction(Intent.ACTION_GET_CONTENT);
 
                         startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
@@ -90,8 +97,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                 builder.create();
                 builder.show();
 
-
-                return true;
+                return false;
             }
         });
 
@@ -101,13 +107,9 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
             @Override
             public boolean onPreferenceClick(Preference preference) {
 
-                /*Intent intent = new Intent()
-                        .setAction(Intent.ACTION_GET_CONTENT);
-                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
-                        + "/");
-                intent.setDataAndType(uri, "");
-                startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 100);
-*/
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                i.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(i, getString(R.string.title_activity_setting)), 100);
 
                 return false;
             }
@@ -124,20 +126,37 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 200 && data != null) {
+            boolean rightFile = false;
             Uri uri = data.getData();
-
-            String content = null;
-            try {
-                content = readTextFromUri(uri);
-            } catch (IOException e) {
-                e.printStackTrace();
+            Pattern pNumber = Pattern.compile("fmh_backup_..........T.........json");
+            Matcher mNumber = pNumber.matcher(uri.getPath());
+            while (mNumber.find()) {
+                rightFile = true;
             }
-            DataBase _db = new DataBase(getActivity());
-            new RestoreDataBase(_db).execute(content);
+            if (rightFile) {
+                String content = null;
+                try {
+                    content = readTextFromUri(uri);
+                    showProgressDialog();
+                    progressDialog.setTitle("Wiederherstellung");
+                    DataBase _db = new DataBase(getActivity());
+                    new RestoreDataBase(_db).execute(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.notification_wrong_backup_file), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (requestCode == 100 && data != null) {
 
             showProgressDialog();
-            progressDialog.setTitle("Wiederherstellung");
-
+            progressDialog.setTitle("Sicherung");
+            Uri uri = data.getData();
+            progressDialog.setMessage(uri.getPath());
+            DataBase _db = new DataBase(getActivity());
+            new CreateBackup(_db).execute();
         }
     }
 
@@ -248,9 +267,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                                 _cash.setTotal(sjo.getInt("total"));
                                 _cash.setIsCloned(sjo.getInt("iscloned"));
                                 long cashid = _db.addCash(_cash);
-
-                                Log.w("Cash Add", String.format("%s, %s", cashid, iId));
-
                             } catch (SQLiteException ex) {
                                 //ex.printStackTrace();
                             }
@@ -267,6 +283,33 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                 //ex.printStackTrace();
 
             }
+            return 1;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            progressDialog.setProgress(progress[0]);
+        }
+
+        protected void onPostExecute(Integer i) {
+            progressDialog.setProgress(100);
+            progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public class CreateBackup extends AsyncTask<Object, Integer, Integer> {
+
+        private DataBase _db;
+
+        public CreateBackup(DataBase db) {
+            this._db = db;
+        }
+
+        @Override
+        protected Integer doInBackground(Object... params) {
+
+            ListMonthYear model = new ListMonthYear();
+            model = _db.getCategorys(model, preference.getString("active_user", "default"));
             return 1;
         }
 
