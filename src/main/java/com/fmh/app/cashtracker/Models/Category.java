@@ -1,6 +1,11 @@
 package com.fmh.app.cashtracker.Models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ralf on 01.02.18.
@@ -16,6 +21,7 @@ public class Category implements Serializable {
     String _User;
     int _Rating;
     double _Total;
+    List<Cash> _Cashes;
 
     // Empty constructor
     public Category() {
@@ -97,12 +103,11 @@ public class Category implements Serializable {
         this._Total = Total;
     }
 
-    public long getCount() {
-        return this._Count;
+    public void setChashes(List<Cash> chaches) {
+        this._Cashes = chaches;
     }
 
-    public void setCount(long Count) {
-        this._Count = Count;
+    public List<Cash> getCashes() {
+        return this._Cashes;
     }
-
 }

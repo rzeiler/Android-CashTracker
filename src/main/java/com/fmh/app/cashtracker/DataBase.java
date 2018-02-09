@@ -535,5 +535,70 @@ public class DataBase extends SQLiteOpenHelper {
         return _data;
     }
 
+    public List<Category> getBackupData() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<Category> _listCategory = new ArrayList<Category>();
+        List<Cash> _listCash = new ArrayList<Cash>();
+
+        String[] tableCategory = new String[]{
+                KEY_cID,
+                KEY_cTITLE,
+                KEY_cCREATEDATE,
+                KEY_cRATING,
+                KEY_cUSER
+        };
+
+        String[] tableCash = new String[]{
+                KEY_sID,
+                KEY_sCONTENT,
+                KEY_sCREATEDATE,
+                KEY_sCATEGORY,
+                KEY_sREPEAT,
+                KEY_sTOTAL,
+                KEY_sISCLONED
+        };
+
+        Cursor cursorCategory = db.query(TABLE_CATEGORY, tableCategory, "", null, null, null, KEY_cID + " DESC");
+        Cursor cursorCash;
+
+        if (cursorCategory.moveToFirst()) {
+            do {
+
+                Category _category = new Category();
+                _category.setCategoryID(cursorCategory.getInt(0));
+                _category.setTitle(cursorCategory.getString(1));
+                _category.setCreateDate(cursorCategory.getLong(2));
+                _category.setRating(cursorCategory.getInt(3));
+                _category.setUser(cursorCategory.getString(4));
+                /* get caheshes */
+                cursorCash = db.query(TABLE_CASH, tableCash, "", null, null, null, KEY_sID + " DESC");
+                /* new list */
+                List<Cash> chashes = new ArrayList<>();
+                if (cursorCash.moveToFirst()) {
+                    do {
+                        Cash _cash = new Cash();
+                        _cash.setCashID(cursorCash.getInt(0));
+                        _cash.setContent(cursorCash.getString(1));
+                        _cash.setCreateDate(cursorCash.getLong(2));
+                        _cash.setCategory(cursorCash.getInt(3));
+                        _cash.setRepeat(cursorCash.getInt(4));
+                        _cash.setTotal(cursorCash.getDouble(5));
+                        _cash.setIsCloned(cursorCash.getInt(6));
+                        chashes.add(_cash);
+                    } while (cursorCash.moveToNext());
+                }
+                cursorCash.close();
+                _category.setChashes(chashes);
+                _listCategory.add(_category);
+            } while (cursorCategory.moveToNext());
+        }
+        cursorCategory.close();
+
+
+        return _listCategory;
+    }
+
 
 }
