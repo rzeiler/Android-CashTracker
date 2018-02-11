@@ -21,7 +21,6 @@ public class Category implements Serializable {
     String _User;
     int _Rating;
     double _Total;
-    List<Cash> _Cashes;
 
     // Empty constructor
     public Category() {
@@ -59,7 +58,7 @@ public class Category implements Serializable {
         return this._Id;
     }
 
-    public void setCategoryID(int id) {
+    public void setCategoryID(long id) {
         this._Id = id;
     }
 
@@ -103,11 +102,5 @@ public class Category implements Serializable {
         this._Total = Total;
     }
 
-    public void setChashes(List<Cash> chaches) {
-        this._Cashes = chaches;
-    }
 
-    public List<Cash> getCashes() {
-        return this._Cashes;
-    }
 }

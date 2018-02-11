@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -20,26 +22,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
-import com.google.gson.Gson;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -87,16 +90,23 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        /* close dialog */
+                        dialogInterface.dismiss();
+
+                        if (progressDialog != null)
+                            progressDialog.dismiss();
 
                         Intent intent = new Intent()
                                 .setType("*/*")
                                 .setAction(Intent.ACTION_GET_CONTENT);
 
                         startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
+
+
                     }
 
                 });
-                // Create the AlertDialog
+
                 builder.create();
                 builder.show();
 
@@ -109,6 +119,10 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
+
+                if (progressDialog != null)
+                    progressDialog.dismiss();
+
                 SimpleDateFormat ft = new SimpleDateFormat("yyyy_MM_dd'T'hh_mm_ss");
                 String filename = String.format("cashtracker_backup_%s.json", ft.format(new Date()));
                 createFile("*/*", filename);
@@ -129,27 +143,16 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         if (requestCode == 200 && data != null) {
             Uri uri = data.getData();
 
-            boolean rightFile = false;
+            if (progressDialog != null)
+                progressDialog.dismiss();
 
-            Pattern pNumber = Pattern.compile("fmh_backup_..........T.........json");
-            Matcher mNumber = pNumber.matcher(uri.getPath());
-            while (mNumber.find()) {
-                rightFile = true;
-            }
-            if (rightFile) {
-                String content = null;
-                try {
-                    content = readTextFromUri(uri);
-                    showProgressDialog();
-                    progressDialog.setTitle("Wiederherstellung");
-                    DataBase _db = new DataBase(getActivity());
-                    new RestoreDataBase(_db).execute(content);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(getActivity(), getString(R.string.notification_wrong_backup_file), Toast.LENGTH_LONG).show();
-            }
+            progressDialog = showProgressDialog();
+            progressDialog.setTitle("Widerherstellen");
+            progressDialog.show();
+
+            DataBase _db = new DataBase(getActivity());
+            new readBackup(_db, uri).execute();
+
         }
 
         if (requestCode == WRITE_REQUEST_CODE && data != null) {
@@ -159,8 +162,9 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
             if (progressDialog != null)
                 progressDialog.dismiss();
 
-            showProgressDialog();
+            progressDialog = showProgressDialog();
             progressDialog.setTitle("Sicherung");
+            progressDialog.show();
 
             DataBase _db = new DataBase(getActivity());
             new writeBackup(_db, uri).execute();
@@ -195,23 +199,24 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         return stringBuilder.toString();
     }
 
-    private void showProgressDialog() {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMax(100);
-        progressDialog.setMessage("");
-        progressDialog.setTitle("Wiederherstellung");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Schließen", new DialogInterface.OnClickListener() {
+    private ProgressDialog showProgressDialog() {
+        ProgressDialog _progressDialog = new ProgressDialog(getActivity());
+        _progressDialog.setMax(100);
+        _progressDialog.setMessage("");
+        _progressDialog.setTitle("");
+        _progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        _progressDialog.setCancelable(false);
+        _progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Schließen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                progressDialog.dismiss();
+                dialog.dismiss();
             }
         });
-        progressDialog.show();
-        progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
-    }
 
+        _progressDialog.show();
+        _progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
+        return _progressDialog;
+    }
 
     public class readBackup extends AsyncTask<Object, Integer, Integer> {
 
@@ -226,56 +231,10 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         @Override
         protected Integer doInBackground(Object... params) {
 
+            String JSON = null;
             try {
-                String content = readTextFromUri(_uri);
-                Gson gson = new Gson();
-                Category[] mcArray = gson.fromJson(content, Category[].class);
-                List<Category> mcList = Arrays.asList(mcArray);
-                int max = mcList.size(), index = 0;
-                for (Category _category : mcList) {
-                    long iId = _db.addCategory(_category);
-                    /* update satus */
-                    double progressstate = (index + 1) * 100 / (max + 1);
-                    publishProgress((int) progressstate);
-                    index++;
-                    for (Cash _cash : _category.getCashes()) {
-                        _cash.setCategory(iId);
-                        _db.addCash(_cash);
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return 1;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            progressDialog.setProgress(progress[0]);
-        }
-
-        protected void onPostExecute(Integer i) {
-            progressDialog.setProgress(100);
-            progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
-        }
-    }
-
-
-    public class RestoreDataBase extends AsyncTask<Object, Integer, Integer> {
-
-        private DataBase _db;
-
-        public RestoreDataBase(DataBase db) {
-            this._db = db;
-        }
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-
-            String JSON = (String) params[0];
-            JSONArray ja;
-            try {
+                JSON = readTextFromUri(_uri);
+                JSONArray ja;
                 ja = new JSONArray(JSON);
                 JSONObject jo, sjo;
                 _db = new DataBase(getActivity());
@@ -350,61 +309,10 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                     }
                 }
             } catch (JSONException e) {
-                //e.printStackTrace();
-
+                e.printStackTrace();
             } catch (SQLiteException ex) {
-                //ex.printStackTrace();
-
-            }
-            return 1;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            progressDialog.setProgress(progress[0]);
-        }
-
-        protected void onPostExecute(Integer i) {
-            progressDialog.setProgress(100);
-            progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
-        }
-    }
-
-    private class writeBackup extends AsyncTask<Object, Integer, Integer> {
-
-        private DataBase _db;
-        private Uri _uri;
-
-        public writeBackup(DataBase db, Uri uri) {
-            this._db = db;
-            this._uri = uri;
-        }
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            try {
-                List<Category> _list = _db.getBackupData();
-                int max = _list.size(), currentIndex = 0;
-
-                Gson gson = new Gson();
-                String jsonString = gson.toJson(_list);
-
-                try {
-                    ParcelFileDescriptor pfd = getActivity().getContentResolver().
-                            openFileDescriptor(_uri, "w");
-                    FileOutputStream fileOutputStream =
-                            new FileOutputStream(pfd.getFileDescriptor());
-                    fileOutputStream.write(jsonString.getBytes());
-                    // Let the document provider know you're done by closing the stream.
-                    fileOutputStream.close();
-                    pfd.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            } catch (Exception e) {
+                ex.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return 1;
@@ -421,4 +329,56 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         }
     }
 
+    private class writeBackup extends AsyncTask<Object, Integer, String> {
+
+        private DataBase _db;
+        private Uri _uri;
+
+        public writeBackup(DataBase db, Uri uri) {
+            this._db = db;
+            this._uri = uri;
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            try {
+                SQLiteDatabase ReadableDatabase = _db.getReadableDatabase();
+                JSONArray root = new JSONArray();
+                JSONArray _listCategory = _db.getBackupCategoryData(ReadableDatabase);
+                int categoryMax = _listCategory.length(), index = 0;
+                for (int a = 0; a < categoryMax; a++) {
+                    JSONObject jo = _listCategory.getJSONObject(a);
+                    JSONArray _listCash = _db.getBackupCashData(jo.getLong("id"), ReadableDatabase);
+                    jo.put("cash", _listCash);
+                    jo.remove("id");
+                    double progressstate = (index + 1) * 100 / (categoryMax + 1);
+                    progressDialog.setProgress((int) progressstate);
+                    index++;
+                }
+                root.put(_listCategory);
+                ParcelFileDescriptor pfd = getActivity().getContentResolver().
+                        openFileDescriptor(_uri, "w");
+                FileOutputStream fileOutputStream =
+                        new FileOutputStream(pfd.getFileDescriptor());
+                fileOutputStream.write(root.toString().getBytes());
+                fileOutputStream.close();
+                pfd.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "Fertig";
+        }
+
+
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            progressDialog.setProgress(progress[0]);
+        }
+
+        protected void onPostExecute(String i) {
+            progressDialog.setProgress(100);
+            progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+
+        }
+    }
 }

@@ -12,6 +12,10 @@ import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.CategoryDetailsItem;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -535,12 +539,10 @@ public class DataBase extends SQLiteOpenHelper {
         return _data;
     }
 
-    public List<Category> getBackupData() {
+    public JSONArray getBackupCategoryData(SQLiteDatabase db) throws JSONException {
 
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        List<Category> _listCategory = new ArrayList<Category>();
-        List<Cash> _listCash = new ArrayList<Cash>();
+        JSONArray _array = new JSONArray();
+        JSONObject _jCategory;
 
         String[] tableCategory = new String[]{
                 KEY_cID,
@@ -550,54 +552,51 @@ public class DataBase extends SQLiteOpenHelper {
                 KEY_cUSER
         };
 
-        String[] tableCash = new String[]{
-                KEY_sID,
-                KEY_sCONTENT,
-                KEY_sCREATEDATE,
-                KEY_sCATEGORY,
-                KEY_sREPEAT,
-                KEY_sTOTAL,
-                KEY_sISCLONED
-        };
-
         Cursor cursorCategory = db.query(TABLE_CATEGORY, tableCategory, "", null, null, null, KEY_cID + " DESC");
-        Cursor cursorCash;
 
         if (cursorCategory.moveToFirst()) {
             do {
-
-                Category _category = new Category();
-                _category.setCategoryID(cursorCategory.getInt(0));
-                _category.setTitle(cursorCategory.getString(1));
-                _category.setCreateDate(cursorCategory.getLong(2));
-                _category.setRating(cursorCategory.getInt(3));
-                _category.setUser(cursorCategory.getString(4));
-                /* get caheshes */
-                cursorCash = db.query(TABLE_CASH, tableCash, "", null, null, null, KEY_sID + " DESC");
-                /* new list */
-                List<Cash> chashes = new ArrayList<>();
-                if (cursorCash.moveToFirst()) {
-                    do {
-                        Cash _cash = new Cash();
-                        _cash.setCashID(cursorCash.getInt(0));
-                        _cash.setContent(cursorCash.getString(1));
-                        _cash.setCreateDate(cursorCash.getLong(2));
-                        _cash.setCategory(cursorCash.getInt(3));
-                        _cash.setRepeat(cursorCash.getInt(4));
-                        _cash.setTotal(cursorCash.getDouble(5));
-                        _cash.setIsCloned(cursorCash.getInt(6));
-                        chashes.add(_cash);
-                    } while (cursorCash.moveToNext());
-                }
-                cursorCash.close();
-                _category.setChashes(chashes);
-                _listCategory.add(_category);
+                _jCategory = new JSONObject();
+                _jCategory.put("id", cursorCategory.getLong(0));
+                _jCategory.put("title", cursorCategory.getString(1));
+                _jCategory.put("createdate", cursorCategory.getLong(2));
+                _jCategory.put("user", cursorCategory.getString(4));
+                _jCategory.put("rating", cursorCategory.getString(4));
+                _array.put(_jCategory);
             } while (cursorCategory.moveToNext());
         }
         cursorCategory.close();
 
+        return _array;
+    }
 
-        return _listCategory;
+    public JSONArray getBackupCashData(long categoryId, SQLiteDatabase db) throws JSONException {
+
+        JSONArray _array = new JSONArray();
+        JSONObject _jCash;
+        String[] tableCash = new String[]{
+                KEY_sCONTENT,
+                KEY_sCREATEDATE,
+                KEY_sREPEAT,
+                KEY_sTOTAL,
+                KEY_sISCLONED
+        };
+        /* get caheshes */
+        Cursor cursorCash = db.query(TABLE_CASH, tableCash, KEY_sCATEGORY + " = ? ", new String[]{String.valueOf(categoryId)}, null, null, KEY_sID + " DESC");
+        /* new list */
+        if (cursorCash.moveToFirst()) {
+            do {
+                _jCash = new JSONObject();
+                _jCash.put("content", cursorCash.getString(0));
+                _jCash.put("createdate", cursorCash.getLong(1));
+                _jCash.put("repeat", cursorCash.getInt(2));
+                _jCash.put("total", cursorCash.getDouble(3));
+                _jCash.put("iscloned", cursorCash.getInt(4));
+                _array.put(_jCash);
+            } while (cursorCash.moveToNext());
+        }
+        cursorCash.close();
+        return _array;
     }
 
 
