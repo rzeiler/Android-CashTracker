@@ -1,7 +1,5 @@
 package com.fmh.app.cashtracker;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Visibility;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +26,6 @@ import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.List;
 
 public class CategoryListActivity extends BaseListActivity {
@@ -45,13 +43,13 @@ public class CategoryListActivity extends BaseListActivity {
     private TextView tvMonthLimit, tvYearLimit;
     private ProgressBar pbYearLimit, pbMonthLimit;
 
-    private AlarmManager alarmMgr;
-    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.category_list);
+        super.onCreate(savedInstanceState);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -69,6 +67,7 @@ public class CategoryListActivity extends BaseListActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         /* create with interface */
+
         mAdapter = new CategoryAdapter(_categoryList.data, new CategoryAdapter.Listener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -95,15 +94,24 @@ public class CategoryListActivity extends BaseListActivity {
         }, context);
 
         /* ui info */
-        final RelativeLayout info = findViewById(R.id.category_list_info);
-        ImageButton closeButton = findViewById(R.id.closeButton);
-        info.setVisibility(preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE);
+        final TextView tvInfoLeft = findViewById(R.id.tvInfoCenter);
+        final TextView tvInfoCenter = findViewById(R.id.tvInfoCenter);
+        final ImageButton closeButton = findViewById(R.id.closeButton);
+
+        int vis = preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE;
+
+        tvInfoLeft.setVisibility(vis);
+        tvInfoCenter.setVisibility(vis);
+        closeButton.setVisibility(vis);
 
         if (preference.getBoolean("cbxInfo", true)) {
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    info.setVisibility(View.GONE);
+                    int vis = View.GONE;
+                    tvInfoLeft.setVisibility(vis);
+                    tvInfoCenter.setVisibility(vis);
+                    closeButton.setVisibility(vis);
                     Toast.makeText(context, getString(R.string.message_hide_info), Toast.LENGTH_LONG).show();
                     preference.edit().putBoolean("cbxInfo", false).apply();
                 }
@@ -136,20 +144,6 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
-
-        Intent intent = new Intent(context, RepeatReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-        // Set the alarm to start at approximately 2:00 p.m.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 16);
-
-        alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        // With setInexactRepeating(), you have to use one of the AlarmManager interval
-        // constants--in this case, AlarmManager.INTERVAL_DAY.
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
 
 
     }

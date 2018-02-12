@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+
     <PreferenceCategory
         android:key="Setting"
         android:title="Einstellungen" >
@@ -28,6 +31,17 @@
             android:key="active_user"
             android:summary="Benutzer der Daten."
             android:title="Benutzer" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="Service"
+        android:title="Optionen" >
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbxService"
+            android:summary="Erstellt automatische wiederholende Ausgaben."
+            android:title="Automation" />
+
     </PreferenceCategory>
     <PreferenceCategory
         android:key="backup"

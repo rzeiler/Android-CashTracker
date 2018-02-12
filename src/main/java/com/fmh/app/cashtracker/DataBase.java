@@ -33,8 +33,8 @@ public class DataBase extends SQLiteOpenHelper {
 
     private static final String DBLOG = "Database-Update";
 
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "CashTracker.db";
+    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "fmh";
     /* filds */
     private static final String KEY_cID = "id";
     private static final String KEY_cTITLE = "title";

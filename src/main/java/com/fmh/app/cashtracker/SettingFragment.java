@@ -1,5 +1,7 @@
 package com.fmh.app.cashtracker;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -41,7 +44,6 @@ import java.util.Date;
 public class SettingFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private SharedPreferences preference;
-    private Context context;
 
     public SettingFragment() {
     }
@@ -58,6 +60,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         super.onViewCreated(view, savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
+
 
         preference = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preference.registerOnSharedPreferenceChangeListener(this);
@@ -110,6 +113,49 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                 return false;
             }
         });
+
+
+        AlarmManager alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getActivity(), RepeatReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast( getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        boolean isService = preference.getBoolean("cbxService", true);
+        if (isService) {
+
+            // Set the alarm to start at approximately 2:00 p.m.
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 8);
+
+            // With setInexactRepeating(), you have to use one of the AlarmManager interval
+            // constants--in this case, AlarmManager.INTERVAL_DAY.
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, alarmIntent);
+
+        } else {
+            try {
+                alarmMgr.cancel(alarmIntent);
+            } catch (Exception e) {
+                // nothing
+            }
+        }
+
+        Preference btnService = findPreference("cbxService");
+        btnService.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+
+                return false;
+            }
+
+        });
+
+
+
+
+
+
 
     }
 
