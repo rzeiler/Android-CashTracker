@@ -1,5 +1,7 @@
 package com.fmh.app.cashtracker;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,13 +23,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class CategoryListActivity extends BaseListActivity {
@@ -45,6 +44,9 @@ public class CategoryListActivity extends BaseListActivity {
     private DataBase db;
     private TextView tvMonthLimit, tvYearLimit;
     private ProgressBar pbYearLimit, pbMonthLimit;
+
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +136,22 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
-        new CheckRepeats().execute(db, recyclerView);
+
+        Intent intent = new Intent(context, RepeatReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        // Set the alarm to start at approximately 2:00 p.m.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
+
+        alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        // With setInexactRepeating(), you have to use one of the AlarmManager interval
+        // constants--in this case, AlarmManager.INTERVAL_DAY.
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, alarmIntent);
+
+
     }
 
 
@@ -243,69 +260,5 @@ public class CategoryListActivity extends BaseListActivity {
         }
     }
 
-    private class CheckRepeats extends AsyncTask<Object, Integer, Integer> {
-
-        private View v;
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            v = (View) params[1];
-            DataBase db = (DataBase) params[0];
-            Calendar c, b;
-            Integer r = 0;
-            for (int i = 1; i < 4; i++) {
-                c = Calendar.getInstance();
-                if (i == 1) {
-                    c.set(Calendar.WEEK_OF_YEAR, c.get(Calendar.WEEK_OF_YEAR) - 1);
-                }
-                if (i == 2) {
-                    c.set(Calendar.MONTH, c.get(Calendar.MONTH) - 1);
-                }
-                if (i == 3) {
-                    c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
-                }
-
-                List<Cash> lc = db.getCashs(i, c.getTimeInMillis()); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
-                for (Cash cash : lc) {
-                    b = Calendar.getInstance();
-                    cash.setIsCloned(1);
-
-                    if (db.updateCash(cash) > 0) {
-                        b.setTime(new Date(cash.getCreateDate()));
-
-                        if (i == 1) {
-                            b.set(Calendar.WEEK_OF_YEAR, b.get(Calendar.WEEK_OF_YEAR) + 1);
-                        }
-                        if (i == 2) {
-                            b.set(Calendar.MONTH, b.get(Calendar.MONTH) + 1);
-                        }
-                        if (i == 3) {
-                            b.set(Calendar.YEAR, b.get(Calendar.YEAR) + 1);
-                        }
-
-
-                        Cash nc = new Cash(cash.getContent(), b.getTimeInMillis(), cash.getCategory(), cash.getRepeat(), cash.getTotal(), 0);
-                        if (db.addCash(nc) > 0)
-                            r++;
-                    }
-                }
-            }
-            return r;
-        }
-
-        protected void onPostExecute(Integer b) {
-            if (b > 0) {
-                Snackbar.make(v, String.format(getString(R.string.notification_repeat_find), b), Snackbar.LENGTH_LONG).setAction("Ok", new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        _categoryList.data.clear();
-                        new CategoryAsyncTask().execute();
-                    }
-                }).show();
-            }
-        }
-
-    }
 
 }

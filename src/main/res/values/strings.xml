@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">CashTracker</string>
     <string name="action_settings">Settings</string>
-    <string name="action_cut">Ausschneiden</string>
     <string name="action_done">Speichern</string>
     <string name="action_delete">Löschen</string>
     <string name="label_description">Beschreibung</string>
@@ -24,7 +23,6 @@
     <string name="title_activity_setting">Einstellungen</string>
     <string name="message_delete">Wollen sie diesen Eintrag wirklich löschen?</string>
     <string name="label_cancel">Abbrechen</string>
-    <string name="notification_wrong_backup_file">Die ausgewählte Datei ist keine gültige Backup Datei!</string>
     <string name="notification_repeat_find">%1$d neue Ausgaben eingestellt.</string>
     <string name="notification_alert_title">Achtung</string>
     <string name="notification_restore_message">Durch das wiederherstellen werden alle Daten in datenbank zuerst gelöscht! Wollen Sie das tun?</string>
@@ -32,6 +30,17 @@
     <string name="info_category_more_edit">Kategorie Details / Bearbeitung</string>
     <string name="info_category_cash_more">Ausgaben Alle / Hinzufügen</string>
     <string name="info_cash_edit">Ausgabe Bearbeitung</string>
-    <string name="info_close">Schließen.</string>
     <string name="message_hide_info">Diese Informationen können Sie unter Einstellungen wieder anktivieren.</string>
+
+    <string name="repeat_notification_title_template">Repeat: %1$s</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="repeat_notification_placeholder_text_template">You said %1$s and lorem ipsum dolor
+        sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper
+        venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque
+        vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis
+        ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet
+        nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.
+    </string>
+
 </resources>

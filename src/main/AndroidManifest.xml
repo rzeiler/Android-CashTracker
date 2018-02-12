@@ -4,13 +4,12 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -50,6 +49,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
+
+        <receiver
+            android:name=".RepeatReceiver"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

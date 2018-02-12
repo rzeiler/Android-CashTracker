@@ -114,6 +114,10 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         animation.setDuration(500);
         lineChart.startAnimation(animation);
 
+
+
+
+
     }
 
 

@@ -4,11 +4,9 @@
     <color name="colorPrimaryDark">#b43935</color>
     <color name="colorAccent">#263238</color>
     <color name="colorAccentDark">#162228</color>
-    <color name="colorText">#3e4748</color>
-    <color name="colorTextLight">#6d7c7e</color>
     <color name="colorTextDisabled">#cfd8dc</color>
     <color name="colorTextWhite">#f0f0f0</color>
-
+    <!-- letter color  -->
     <color name="a">#EF5350</color>
     <color name="b">#EC407A</color>
     <color name="c">#BA68C8</color>
@@ -35,5 +33,4 @@
     <color name="x">#1B5E20</color>
     <color name="y">#006064</color>
     <color name="z">#0D47A1</color>
-
 </resources>
