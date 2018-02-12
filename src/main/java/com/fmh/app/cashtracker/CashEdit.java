@@ -166,6 +166,9 @@ public class CashEdit extends BaseEdit {
 
         if (id == R.id.action_delete) {
 
+            DataBase _db = new DataBase(context);
+            _db.deleteCash(_cash);
+
             AlertDialog dialog = ConfirmDelete(context);
 
             dialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {

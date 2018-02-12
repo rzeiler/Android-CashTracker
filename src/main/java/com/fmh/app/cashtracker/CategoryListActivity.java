@@ -1,7 +1,5 @@
 package com.fmh.app.cashtracker;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,15 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +71,6 @@ public class CategoryListActivity extends BaseListActivity {
             @Override
             public void onItemClick(View v, int position) {
 
-
                 Intent intent;
 
                 switch (v.getId()) {
@@ -92,6 +91,23 @@ public class CategoryListActivity extends BaseListActivity {
 
             }
         }, context);
+
+        /* ui info */
+        final RelativeLayout info = findViewById(R.id.category_list_info);
+        ImageButton closeButton = findViewById(R.id.closeButton);
+        info.setVisibility(preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE);
+
+        if (preference.getBoolean("cbxInfo", true)) {
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    info.setVisibility(View.GONE);
+                    Toast.makeText(context, getString(R.string.message_hide_info), Toast.LENGTH_LONG).show();
+                    preference.edit().putBoolean("cbxInfo", false).apply();
+                }
+            });
+        }
+
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -118,7 +134,7 @@ public class CategoryListActivity extends BaseListActivity {
         });
 
         new CategoryAsyncTask().execute();
-        new CheckRepeats().execute(db, recyclerView  );
+        new CheckRepeats().execute(db, recyclerView);
     }
 
 
@@ -249,7 +265,7 @@ public class CategoryListActivity extends BaseListActivity {
                     c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
                 }
 
-                List<Cash> lc = db.getCashs(i,c.getTimeInMillis()); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
+                List<Cash> lc = db.getCashs(i, c.getTimeInMillis()); // db.getCash(" iscloned=0 AND repeat=" + i + " AND int_create_date <= " + c.getTimeInMillis() + " ");
                 for (Cash cash : lc) {
                     b = Calendar.getInstance();
                     cash.setIsCloned(1);
@@ -268,8 +284,8 @@ public class CategoryListActivity extends BaseListActivity {
                         }
 
 
-                        Cash nc = new Cash(cash.getContent(), b.getTimeInMillis(),  cash.getCategory(), cash.getRepeat(), cash.getTotal(), 0);
-                        if(db.addCash(nc) > 0)
+                        Cash nc = new Cash(cash.getContent(), b.getTimeInMillis(), cash.getCategory(), cash.getRepeat(), cash.getTotal(), 0);
+                        if (db.addCash(nc) > 0)
                             r++;
                     }
                 }

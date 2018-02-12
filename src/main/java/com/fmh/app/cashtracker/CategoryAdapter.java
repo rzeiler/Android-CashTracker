@@ -56,7 +56,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
         holder.tvSum.setText(String.format("%.2f €", _category.getTotal()));
         holder.ratingBar.setRating(_category.getRating());
-
+        holder.tvCount.setText(String.format("%s Anzahl",_category.getCount()));
 
         // Set the view to fade in
         setFadeAnimation(holder.itemView, position);
@@ -92,7 +92,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvBigletter, tvTitle, tvSum;
+        public TextView tvBigletter, tvTitle, tvSum, tvCount;
         public RatingBar ratingBar;
 
         public CategoryViewHolder(View v) {
@@ -101,6 +101,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             tvTitle = v.findViewById(R.id.tvTitle);
             tvSum = v.findViewById(R.id.tvSum);
             ratingBar = v.findViewById(R.id.ratingBar);
+            tvCount = v.findViewById(R.id.tvCount);
         }
     }
 

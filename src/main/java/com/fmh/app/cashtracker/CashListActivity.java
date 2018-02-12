@@ -15,8 +15,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
@@ -85,6 +88,22 @@ public class CashListActivity extends BaseListActivity {
 
             }
         }, context);
+
+        /* ui info */
+        final RelativeLayout info = findViewById(R.id.cash_list_info);
+        ImageButton closeButton = findViewById(R.id.closeButton);
+        info.setVisibility(preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE);
+
+        if (preference.getBoolean("cbxInfo", true)) {
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    info.setVisibility(View.GONE);
+                    Toast.makeText(context, getString(R.string.message_hide_info), Toast.LENGTH_LONG).show();
+                    preference.edit().putBoolean("cbxInfo", false).apply();
+                }
+            });
+        }
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);

@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
@@ -40,9 +39,9 @@ public class CategoryEdit extends BaseEdit {
         Intent intent = getIntent();
         _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
 
-        bDate = (Button) findViewById(R.id.bDate);
-        etTitle = (EditText) findViewById(R.id.etCategory);
-        rbFirma = (RatingBar) findViewById(R.id.rbPosition);
+        bDate = findViewById(R.id.bDate);
+        etTitle = findViewById(R.id.etCategory);
+        rbFirma = findViewById(R.id.rbPosition);
 
         if (_category != null) {
             getSupportActionBar().setTitle(_category.getTitle());
@@ -113,6 +112,9 @@ public class CategoryEdit extends BaseEdit {
         }
 
         if (id == R.id.action_delete) {
+
+            DataBase _db = new DataBase(context);
+            _db.deleteCategory(_category);
 
             AlertDialog dialog = ConfirmDelete(context);
 

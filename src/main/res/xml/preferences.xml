@@ -18,6 +18,11 @@
             android:key="cbxAlert"
             android:summary="Info wenn die Grenze überschritten wird."
             android:title="Alarm" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbxInfo"
+            android:summary="Zeige Informationen und Option."
+            android:title="Info" />
         <EditTextPreference
             android:inputType="text"
             android:key="active_user"

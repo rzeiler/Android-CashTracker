@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
 
 public class DataBase extends SQLiteOpenHelper {
 
+    private static final String DBLOG = "Database-Update";
+
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "CashTracker.db";
     /* filds */
@@ -94,6 +96,9 @@ public class DataBase extends SQLiteOpenHelper {
         /* call db */
         i = db.insert(TABLE_CATEGORY, null, values);
         db.close();
+
+        // log
+        Log.w(DBLOG, "Add Category");
         return i;
     }
 
@@ -170,7 +175,12 @@ public class DataBase extends SQLiteOpenHelper {
         values.put(KEY_sTOTAL, _cash.getTotal());
         values.put(KEY_sISCLONED, _cash.getIsCloned());
         // call db
-        return db.insert(TABLE_CASH, null, values);
+        long id = db.insert(TABLE_CASH, null, values);
+        // log
+        Log.w(DBLOG, "Add Cash");
+        // close db
+        db.close();
+        return id;
     }
 
     public int updateCash(Cash _cash) {
@@ -233,7 +243,7 @@ public class DataBase extends SQLiteOpenHelper {
             filterTitel = "a." + KEY_cTITLE + " LIKE '" + filterTitel + "%' AND ";
 
         String query = "SELECT a." + KEY_cID + ", a." + KEY_cTITLE + ", SUM(IFNull(b." + KEY_sTOTAL + ",0.00)),  a." + KEY_cCREATEDATE +
-                ", a." + KEY_cRATING + ", a." + KEY_cUSER + ", COUNT(a." + KEY_cID + ") FROM " + TABLE_CATEGORY + " AS a LEFT OUTER JOIN " + TABLE_CASH + " AS b ON b." + KEY_sCATEGORY + "=a.id AND b." +
+                ", a." + KEY_cRATING + ", a." + KEY_cUSER + ", COUNT(b." + KEY_sID + ") FROM " + TABLE_CATEGORY + " AS a LEFT OUTER JOIN " + TABLE_CASH + " AS b ON b." + KEY_sCATEGORY + "=a.id AND b." +
                 KEY_sCREATEDATE + " >= ? WHERE " + filterTitel + " a." + KEY_cUSER + " = ? GROUP BY a." + KEY_cID + " ORDER BY a." + KEY_cRATING + " DESC, a." + KEY_cTITLE + " ASC;";
 
         Cursor cursor = db.rawQuery(query, new String[]{
@@ -245,12 +255,13 @@ public class DataBase extends SQLiteOpenHelper {
             do {
 
                 Category _category = new Category();
-                _category.setCategoryID(cursor.getInt(0));
+                _category.setCategoryID(cursor.getLong(0));
                 _category.setTitle(cursor.getString(1));
                 _category.setTotal(cursor.getDouble(2));
                 _category.setCreateDate(cursor.getLong(3));
                 _category.setRating(cursor.getInt(4));
                 _category.setUser(cursor.getString(5));
+                _category.setCount(cursor.getLong(6));
                 _categoryList.data.add(_category);
                 _category = null;
 
@@ -539,8 +550,8 @@ public class DataBase extends SQLiteOpenHelper {
         return _data;
     }
 
-    public JSONArray getBackupCategoryData(SQLiteDatabase db) throws JSONException {
-
+    public JSONArray getBackupCategoryData() throws JSONException {
+        SQLiteDatabase db = this.getReadableDatabase();
         JSONArray _array = new JSONArray();
         JSONObject _jCategory;
 
@@ -560,18 +571,18 @@ public class DataBase extends SQLiteOpenHelper {
                 _jCategory.put("id", cursorCategory.getLong(0));
                 _jCategory.put("title", cursorCategory.getString(1));
                 _jCategory.put("createdate", cursorCategory.getLong(2));
+                _jCategory.put("rating", cursorCategory.getInt(3));
                 _jCategory.put("user", cursorCategory.getString(4));
-                _jCategory.put("rating", cursorCategory.getString(4));
                 _array.put(_jCategory);
             } while (cursorCategory.moveToNext());
         }
         cursorCategory.close();
-
+        db.close();
         return _array;
     }
 
-    public JSONArray getBackupCashData(long categoryId, SQLiteDatabase db) throws JSONException {
-
+    public JSONArray getBackupCashData(long categoryId) throws JSONException {
+        SQLiteDatabase db = this.getReadableDatabase();
         JSONArray _array = new JSONArray();
         JSONObject _jCash;
         String[] tableCash = new String[]{
@@ -596,6 +607,7 @@ public class DataBase extends SQLiteOpenHelper {
             } while (cursorCash.moveToNext());
         }
         cursorCash.close();
+        db.close();
         return _array;
     }
 

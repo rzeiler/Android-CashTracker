@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -20,28 +18,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -51,8 +42,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
     private SharedPreferences preference;
     private Context context;
-    private ProgressDialog progressDialog;
-
 
     public SettingFragment() {
     }
@@ -93,16 +82,11 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                         /* close dialog */
                         dialogInterface.dismiss();
 
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
-
                         Intent intent = new Intent()
                                 .setType("*/*")
                                 .setAction(Intent.ACTION_GET_CONTENT);
 
                         startActivityForResult(Intent.createChooser(intent, getString(R.string.title_activity_setting)), 200);
-
-
                     }
 
                 });
@@ -119,9 +103,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
-
-                if (progressDialog != null)
-                    progressDialog.dismiss();
 
                 SimpleDateFormat ft = new SimpleDateFormat("yyyy_MM_dd'T'hh_mm_ss");
                 String filename = String.format("cashtracker_backup_%s.json", ft.format(new Date()));
@@ -142,33 +123,14 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
         if (requestCode == 200 && data != null) {
             Uri uri = data.getData();
-
-            if (progressDialog != null)
-                progressDialog.dismiss();
-
-            progressDialog = showProgressDialog();
-            progressDialog.setTitle("Widerherstellen");
-            progressDialog.show();
-
             DataBase _db = new DataBase(getActivity());
-            new readBackup(_db, uri).execute();
-
+            new readBackup(_db, uri, showProgressDialog(getString(R.string.label_restore))).execute();
         }
 
         if (requestCode == WRITE_REQUEST_CODE && data != null) {
-
             Uri uri = data.getData();
-
-            if (progressDialog != null)
-                progressDialog.dismiss();
-
-            progressDialog = showProgressDialog();
-            progressDialog.setTitle("Sicherung");
-            progressDialog.show();
-
             DataBase _db = new DataBase(getActivity());
-            new writeBackup(_db, uri).execute();
-
+            new writeBackup(_db, uri, showProgressDialog(getString(R.string.label_save))).execute();
         }
     }
 
@@ -199,11 +161,11 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         return stringBuilder.toString();
     }
 
-    private ProgressDialog showProgressDialog() {
+    private ProgressDialog showProgressDialog(String title) {
         ProgressDialog _progressDialog = new ProgressDialog(getActivity());
         _progressDialog.setMax(100);
         _progressDialog.setMessage("");
-        _progressDialog.setTitle("");
+        _progressDialog.setTitle(title);
         _progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         _progressDialog.setCancelable(false);
         _progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Schließen", new DialogInterface.OnClickListener() {
@@ -212,8 +174,8 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                 dialog.dismiss();
             }
         });
-
         _progressDialog.show();
+        /* hide button */
         _progressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
         return _progressDialog;
     }
@@ -222,33 +184,39 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
         private DataBase _db;
         private Uri _uri;
+        private ProgressDialog progressDialog;
 
-        public readBackup(DataBase db, Uri uri) {
+        public readBackup(DataBase db, Uri uri, ProgressDialog progressDialog) {
             this._db = db;
             this._uri = uri;
+            this.progressDialog = progressDialog;
+            this.progressDialog.setProgress(0);
         }
 
         @Override
         protected Integer doInBackground(Object... params) {
-
             String JSON = null;
             try {
                 JSON = readTextFromUri(_uri);
                 JSONArray ja;
                 ja = new JSONArray(JSON);
                 JSONObject jo, sjo;
-                _db = new DataBase(getActivity());
+                /* delete old data */
                 _db.ClearData();
+
+                Log.w("doInBackground", "run");
+
                 int max = ja.length();
                 for (int index = 0; index < max; index++) {
                     /* state display */
                     double progressstate = (index + 1) * 100 / (max + 1);
                     publishProgress((int) progressstate);
                     jo = ja.getJSONObject(index);
+
                     /* add category */
                     Date _date = new Date();
                     try {
-                        _date.setTime(0);
+
                         Object createdate = jo.get("createdate");
                         if (createdate instanceof Long) {
                             _date.setTime(jo.getLong("createdate"));
@@ -258,7 +226,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                         }
                         /* overwrite */
                         jo.put("createdate", _date.getTime());
-                        jo.put("id", -1);
 
                         Category _category = new Category();
                         _category.setTitle(jo.getString("title"));
@@ -267,7 +234,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                         _category.setRating(jo.getInt("rating"));
                         long iId = _db.addCategory(_category);
                         _category.setCategoryID(Long.valueOf(iId).intValue());
-                        Log.w("Category Add", String.format("%s", _category.getCategoryID()));
+
 
                         JSONArray cashArray = jo.getJSONArray("cash");
                         for (int cashIndex = 0; cashIndex < cashArray.length(); cashIndex++) {
@@ -278,7 +245,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                                 if (sjo.has("iscloned")) {
                                     ISCLONED = sjo.getInt("iscloned");
                                 }
-                                _date.setTime(0);
+                                _date = new Date();
 
                                 createdate = sjo.get("createdate");
                                 if (createdate instanceof Long)
@@ -288,7 +255,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                                     _date = _db.getDateFromString(sjo.getString("createdate"));
 
                                 sjo.put("createdate", _date.getTime());
-                                sjo.put("id", -1);
                                 sjo.put("iscloned", ISCLONED);
 
                                 Cash _cash = new Cash();
@@ -298,7 +264,8 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
                                 _cash.setRepeat(sjo.getInt("repeat"));
                                 _cash.setTotal(sjo.getInt("total"));
                                 _cash.setIsCloned(sjo.getInt("iscloned"));
-                                long cashid = _db.addCash(_cash);
+                                _db.addCash(_cash);
+
                             } catch (SQLiteException ex) {
                                 //ex.printStackTrace();
                             }
@@ -333,34 +300,37 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
 
         private DataBase _db;
         private Uri _uri;
+        private ProgressDialog progressDialog;
 
-        public writeBackup(DataBase db, Uri uri) {
+        public writeBackup(DataBase db, Uri uri, ProgressDialog progressDialog) {
             this._db = db;
             this._uri = uri;
+            this.progressDialog = progressDialog;
+            this.progressDialog.setProgress(0);
         }
 
         @Override
         protected String doInBackground(Object... params) {
             try {
-                SQLiteDatabase ReadableDatabase = _db.getReadableDatabase();
-                JSONArray root = new JSONArray();
-                JSONArray _listCategory = _db.getBackupCategoryData(ReadableDatabase);
+                /* get data */
+                JSONArray _listCategory = _db.getBackupCategoryData();
                 int categoryMax = _listCategory.length(), index = 0;
                 for (int a = 0; a < categoryMax; a++) {
                     JSONObject jo = _listCategory.getJSONObject(a);
-                    JSONArray _listCash = _db.getBackupCashData(jo.getLong("id"), ReadableDatabase);
+                    JSONArray _listCash = _db.getBackupCashData(jo.getLong("id"));
                     jo.put("cash", _listCash);
                     jo.remove("id");
+                    /* ui status */
                     double progressstate = (index + 1) * 100 / (categoryMax + 1);
                     progressDialog.setProgress((int) progressstate);
                     index++;
                 }
-                root.put(_listCategory);
+                /* to file */
                 ParcelFileDescriptor pfd = getActivity().getContentResolver().
                         openFileDescriptor(_uri, "w");
                 FileOutputStream fileOutputStream =
                         new FileOutputStream(pfd.getFileDescriptor());
-                fileOutputStream.write(root.toString().getBytes());
+                fileOutputStream.write(_listCategory.toString().getBytes());
                 fileOutputStream.close();
                 pfd.close();
             } catch (Exception e) {

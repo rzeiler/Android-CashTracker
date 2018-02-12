@@ -1,26 +1,12 @@
 package com.fmh.app.cashtracker.Models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ralf on 01.02.18.
  */
 
 public class Category implements Serializable {
-
-    // private variables
-    long _Id = -1;
-    long _Count = 0;
-    String _Title;
-    long _CreateDate;
-    String _User;
-    int _Rating;
-    double _Total;
 
     // Empty constructor
     public Category() {
@@ -102,5 +88,21 @@ public class Category implements Serializable {
         this._Total = Total;
     }
 
+    public long getCount() {
+        return _Count;
+    }
+
+    public void setCount(long _Count) {
+        this._Count = _Count;
+    }
+
+    // private variables
+    private long _Id = -1;
+    private long _Count = 0;
+    private String _Title;
+    private long _CreateDate;
+    private String _User;
+    private int _Rating;
+    private double _Total;
 
 }
