@@ -93,30 +93,8 @@ public class CategoryListActivity extends BaseListActivity {
             }
         }, context);
 
-        /* ui info */
-        final TextView tvInfoLeft = findViewById(R.id.tvInfoCenter);
-        final TextView tvInfoCenter = findViewById(R.id.tvInfoCenter);
-        final ImageButton closeButton = findViewById(R.id.closeButton);
 
-        int vis = preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE;
 
-        tvInfoLeft.setVisibility(vis);
-        tvInfoCenter.setVisibility(vis);
-        closeButton.setVisibility(vis);
-
-        if (preference.getBoolean("cbxInfo", true)) {
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int vis = View.GONE;
-                    tvInfoLeft.setVisibility(vis);
-                    tvInfoCenter.setVisibility(vis);
-                    closeButton.setVisibility(vis);
-                    Toast.makeText(context, getString(R.string.message_hide_info), Toast.LENGTH_LONG).show();
-                    preference.edit().putBoolean("cbxInfo", false).apply();
-                }
-            });
-        }
 
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
