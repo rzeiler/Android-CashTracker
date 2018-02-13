@@ -2,3 +2,4 @@
 *.gradle
 *.iml
 *.pro
+/release
