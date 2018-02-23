@@ -1,11 +1,13 @@
 package com.fmh.app.cashtracker;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.AlertDialog;
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -18,7 +20,7 @@ import java.util.Calendar;
  */
 
 
-public class BaseEdit extends AppCompatActivity {
+public class BaseEdit extends Activity {
 
     public int year, month, day;
     public SimpleDateFormat DateFormat = new SimpleDateFormat("dd.MM.yyyy");

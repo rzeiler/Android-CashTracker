@@ -1,22 +1,20 @@
 package com.fmh.app.cashtracker;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,13 +27,13 @@ import java.util.List;
 
 import static com.fmh.app.cashtracker.CategoryListActivity.CATEGORY_ITEM;
 
-public class CategoryDetailsActivity extends AppCompatActivity {
+public class CategoryDetailsActivity extends Activity {
 
     private Context context;
     private Category _category;
     private Boolean _hasChange = false;
     private TextView _detailsMonat, _detailsJahr;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
+
     private ListMonthYear _model = new ListMonthYear();
     public CategoryDetailsAdapter _adapter;
     private Paint mTextPaint;
@@ -49,17 +47,11 @@ public class CategoryDetailsActivity extends AppCompatActivity {
 
         setContentView(R.layout.category_details);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        setSupportActionBar(toolbar);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         Intent intent = getIntent();
         _category = (Category) intent.getSerializableExtra(CATEGORY_ITEM);
-
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        collapsingToolbarLayout.setTitleEnabled(true);
-        collapsingToolbarLayout.setTitle(_category.getTitle());
+        getActionBar().setTitle(_category.getTitle());
 
         SharedPreferences _sp = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -95,7 +87,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         _detailsMonat.setText(String.format("Monat %.2f €", _model.getMonthSum()));
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Button fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,7 +100,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         Animation animation = AnimationUtils.loadAnimation(this.context, R.anim.push_bottom_in);
         animation.setDuration(500);
@@ -150,7 +142,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 _hasChange = true;
                 _category = (Category) data.getSerializableExtra(CATEGORY_ITEM);
-                collapsingToolbarLayout.setTitle(_category.getTitle());
+                getActionBar().setTitle(_category.getTitle());
             }
             if (resultCode == RESULT_CANCELED) {
                 _hasChange = false;

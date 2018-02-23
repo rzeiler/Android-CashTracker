@@ -1,67 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ToolbarStatus"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
-    android:layout_marginBottom="5dp"
-    android:layout_marginTop="5dp"
-    app:columnCount="2"
-    app:rowCount="2">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="auto"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <ProgressBar
         android:id="@+id/pbMonthLimit"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
         android:layout_margin="4dp"
+        android:layout_row="0"
         android:indeterminateBehavior="repeat"
         android:max="100"
         android:maxHeight="12dp"
         android:minHeight="10dp"
         android:progress="20"
-        android:progressTint="@color/colorAccent"
         android:progressBackgroundTint="@color/colorAccentDark"
-        app:layout_column="0"
-        app:layout_columnWeight="1"
-        app:layout_row="0" />
+        android:progressTint="@color/colorAccent" />
 
     <TextView
         android:id="@+id/tvMonthLimit"
         android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
         android:layout_margin="4dp"
+        android:layout_row="1"
         android:text="@string/app_name"
         android:textColor="@android:color/white"
-        android:textSize="12sp"
-        app:layout_column="0"
-        app:layout_columnWeight="1"
-        app:layout_row="1" />
+        android:textSize="12sp" />
 
     <ProgressBar
         android:id="@+id/pbYearLimit"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
         android:layout_margin="4dp"
+        android:layout_row="0"
         android:max="100"
         android:maxHeight="12dp"
         android:minHeight="10dp"
         android:progress="40"
-        android:progressTint="@color/colorAccent"
         android:progressBackgroundTint="@color/colorAccentDark"
-        app:layout_column="1"
-        app:layout_columnWeight="1"
-        app:layout_row="0" />
+        android:progressTint="@color/colorAccent" />
 
     <TextView
         android:id="@+id/tvYearLimit"
         android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
         android:layout_margin="4dp"
+        android:layout_row="1"
         android:text="@string/app_name"
         android:textColor="@android:color/white"
-        android:textSize="12sp"
-        app:layout_column="1"
-        app:layout_columnWeight="1"
-        app:layout_row="1" />
+        android:textSize="12sp" />
 
-</android.support.v7.widget.GridLayout>
+</GridLayout>
 
 

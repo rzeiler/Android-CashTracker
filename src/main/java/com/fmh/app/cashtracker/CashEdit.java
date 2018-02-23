@@ -1,6 +1,6 @@
 package com.fmh.app.cashtracker;
 
-
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,13 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
@@ -41,9 +39,8 @@ public class CashEdit extends BaseEdit {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cash_edit);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         context = this;
 
         Intent intent = getIntent();
@@ -51,7 +48,7 @@ public class CashEdit extends BaseEdit {
         _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
-        getSupportActionBar().setSubtitle(_category.getTitle());
+        getActionBar().setSubtitle(_category.getTitle());
 
         bDate = findViewById(R.id.bDate);
         etDescription = findViewById(R.id.etDescription);
@@ -59,13 +56,13 @@ public class CashEdit extends BaseEdit {
         sRepeat = findViewById(R.id.sRepeat);
 
         if (_cash != null) {
-            getSupportActionBar().setTitle(getString(R.string.label_edit_item));
+            getActionBar().setTitle(getString(R.string.label_edit_item));
 
             etDescription.setText(_cash.getContent());
             etSum.setText(String.format("%.2f", _cash.getTotal()));
 
         } else {
-            getSupportActionBar().setTitle(getString(R.string.label_new_item));
+            getActionBar().setTitle(getString(R.string.label_new_item));
 
             _cash = new Cash();
             _cash.setTotal(0.00);
@@ -158,8 +155,7 @@ public class CashEdit extends BaseEdit {
 
                 finish();
             } else {
-                Snackbar.make(bDate, String.format("Fehler beim speichern von %s.", _cash.getCategory()), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Toast.makeText(context, String.format("Fehler beim speichern von %s.", _cash.getCategory()), Toast.LENGTH_LONG).show();
             }
             return true;
         }
@@ -174,7 +170,7 @@ public class CashEdit extends BaseEdit {
             dialog.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent  returnIntent = new Intent(CashEdit.this, CashListActivity.class);
+                    Intent returnIntent = new Intent(CashEdit.this, CashListActivity.class);
                     returnIntent.putExtra("result", "Gelöscht");
                     returnIntent.putExtra(CashListActivity.CASH_ITEM, (Serializable) _cash);
                     returnIntent.putExtra(CategoryListActivity.CATEGORY_ITEM, (Serializable) _category);

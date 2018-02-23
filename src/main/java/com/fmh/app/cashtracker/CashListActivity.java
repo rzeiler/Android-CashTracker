@@ -6,12 +6,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,18 +46,15 @@ public class CashListActivity extends BaseListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cash_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = this;
 
         Intent intent = getIntent();
         _category = (Category) intent.getSerializableExtra(CategoryListActivity.CATEGORY_ITEM);
-        toolbar.setTitle(_category.getTitle());
-
-        getSupportActionBar().setTitle(String.format(getString(R.string.label_cashs), _category.getTitle()));
-        getSupportActionBar().setSubtitle(getString(R.string.app_name));
+        getActionBar().setTitle(String.format(getString(R.string.label_cashs), _category.getTitle()));
+        getActionBar().setSubtitle(getString(R.string.app_name));
 
         tvMonthLimit = findViewById(R.id.tvMonthLimit);
         tvYearLimit = findViewById(R.id.tvYearLimit);
@@ -116,7 +110,7 @@ public class CashListActivity extends BaseListActivity {
 
         mAdapter.notifyDataSetChanged();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,12 +136,13 @@ public class CashListActivity extends BaseListActivity {
         if (preference.getLong(CashListActivity.CUT_CASH_ITEM, -1) > 0)
             menu.findItem(R.id.action_paste).setVisible(true);
 
-        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        search.setOnQueryTextListener(queryTextListener);
+        //SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        //search.setOnQueryTextListener(queryTextListener);
 
         return true;
     }
 
+    /*
     SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -163,6 +158,7 @@ public class CashListActivity extends BaseListActivity {
             return false;
         }
     };
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

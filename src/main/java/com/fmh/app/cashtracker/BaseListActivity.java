@@ -1,7 +1,7 @@
 package com.fmh.app.cashtracker;
 
 import android.animation.ObjectAnimator;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 
@@ -9,7 +9,7 @@ import android.widget.ProgressBar;
  * Created by ralf on 07.02.18.
  */
 
-public class BaseListActivity extends AppCompatActivity {
+public class BaseListActivity extends Activity {
 
     public void AnimateProgressBar(ProgressBar progressBar, int progressState ){
 

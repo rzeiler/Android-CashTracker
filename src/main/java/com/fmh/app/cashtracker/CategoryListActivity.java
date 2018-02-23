@@ -6,21 +6,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.transition.Visibility;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
@@ -50,13 +44,11 @@ public class CategoryListActivity extends BaseListActivity {
         setContentView(R.layout.category_list);
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         context = this;
 
-        getSupportActionBar().setTitle(getString(R.string.label_categorys));
-        getSupportActionBar().setSubtitle(getString(R.string.app_name));
+        getActionBar().setTitle(getString(R.string.label_categorys));
+        getActionBar().setSubtitle(getString(R.string.app_name));
 
         tvMonthLimit = findViewById(R.id.tvMonthLimit);
         tvYearLimit = findViewById(R.id.tvYearLimit);
@@ -94,9 +86,6 @@ public class CategoryListActivity extends BaseListActivity {
         }, context);
 
 
-
-
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -110,7 +99,7 @@ public class CategoryListActivity extends BaseListActivity {
 
         mAdapter.notifyDataSetChanged();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,12 +121,13 @@ public class CategoryListActivity extends BaseListActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_category, menu);
 
-        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        search.setOnQueryTextListener(queryTextListener);
+        // SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        // search.setOnQueryTextListener(queryTextListener);
 
         return true;
     }
 
+    /*
     SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -153,6 +143,7 @@ public class CategoryListActivity extends BaseListActivity {
             return false;
         }
     };
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

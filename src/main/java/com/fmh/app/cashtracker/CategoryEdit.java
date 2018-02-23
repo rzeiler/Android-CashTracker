@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
+import android.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -32,8 +30,7 @@ public class CategoryEdit extends BaseEdit {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_edit);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         context = this;
 
         Intent intent = getIntent();
@@ -44,17 +41,17 @@ public class CategoryEdit extends BaseEdit {
         rbFirma = findViewById(R.id.rbPosition);
 
         if (_category != null) {
-            getSupportActionBar().setTitle(_category.getTitle());
+            getActionBar().setTitle(_category.getTitle());
             etTitle.setText(_category.getTitle());
             rbFirma.setRating(_category.getRating());
         } else {
-            getSupportActionBar().setTitle(getString(R.string.label_new_item));
+            getActionBar().setTitle(getString(R.string.label_new_item));
             _category = new Category();
             _category.setUser("test");
             _category.setCreateDate(calendar.getTimeInMillis());
         }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(_category.getCreateDate());
@@ -105,9 +102,8 @@ public class CategoryEdit extends BaseEdit {
 
                 finish();
             } else {
-                Snackbar.make(bDate, String.format("Fehler beim speichern von %s.", _category.getTitle()), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+                Toast.makeText(context,String.format("Fehler beim speichern von %s.", _category.getTitle()),Toast.LENGTH_LONG).show();
+              }
             return true;
         }
 

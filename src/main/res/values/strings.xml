@@ -33,6 +33,7 @@
     <string name="message_hide_info">Diese Informationen können Sie unter Einstellungen > Info wieder anktivieren.</string>
 
     <string name="new_message_notification_title_template">New message: %1$s</string>
+    <string name="action">action_fab</string>
 
 
 </resources>
