@@ -58,10 +58,10 @@ public class CategoryListActivity extends BaseListActivity {
         getSupportActionBar().setTitle(getString(R.string.label_categorys));
         getSupportActionBar().setSubtitle(getString(R.string.app_name));
 
-        tvMonthLimit = findViewById(R.id.tvMonthLimit);
-        tvYearLimit = findViewById(R.id.tvYearLimit);
-        pbYearLimit = findViewById(R.id.pbYearLimit);
-        pbMonthLimit = findViewById(R.id.pbMonthLimit);
+        tvMonthLimit = (TextView)findViewById(R.id.tvMonthLimit);
+        tvYearLimit = (TextView)findViewById(R.id.tvYearLimit);
+        pbYearLimit = (ProgressBar) findViewById(R.id.pbYearLimit);
+        pbMonthLimit = (ProgressBar)findViewById(R.id.pbMonthLimit);
 
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 

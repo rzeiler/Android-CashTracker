@@ -88,10 +88,10 @@ class CashAdapter extends RecyclerView.Adapter<CashAdapter.CashViewHolder> {
 
         public CashViewHolder(View v) {
             super(v);
-            Beschreibung = v.findViewById(R.id.tvTitle);
-            Summe = v.findViewById(R.id.tvSummary);
-            Datum = v.findViewById(R.id.tvDateButton);
-            Repeat = v.findViewById(R.id.tvRepeat);
+            Beschreibung =(TextView) v.findViewById(R.id.tvTitle);
+            Summe = (TextView)v.findViewById(R.id.tvSummary);
+            Datum = (TextView)v.findViewById(R.id.tvDateButton);
+            Repeat = (TextView) v.findViewById(R.id.tvRepeat);
         }
     }
 

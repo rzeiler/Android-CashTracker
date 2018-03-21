@@ -62,11 +62,10 @@ public class CashListActivity extends BaseListActivity {
         getSupportActionBar().setTitle(String.format(getString(R.string.label_cashs), _category.getTitle()));
         getSupportActionBar().setSubtitle(getString(R.string.app_name));
 
-        tvMonthLimit = findViewById(R.id.tvMonthLimit);
-        tvYearLimit = findViewById(R.id.tvYearLimit);
-        pbYearLimit = findViewById(R.id.pbYearLimit);
-        pbMonthLimit = findViewById(R.id.pbMonthLimit);
-
+        tvMonthLimit = (TextView) findViewById(R.id.tvMonthLimit);
+        tvYearLimit =(TextView) findViewById(R.id.tvYearLimit);
+        pbYearLimit = (ProgressBar) findViewById(R.id.pbYearLimit);
+        pbMonthLimit = (ProgressBar) findViewById(R.id.pbMonthLimit);
 
         preference = PreferenceManager.getDefaultSharedPreferences(context);
         long CashId = preference.getLong(CashListActivity.CUT_CASH_ITEM, -1);
@@ -90,8 +89,8 @@ public class CashListActivity extends BaseListActivity {
         }, context);
 
         /* ui info */
-        final RelativeLayout info = findViewById(R.id.cash_list_info);
-        ImageButton closeButton = findViewById(R.id.closeButton);
+        final RelativeLayout info = (RelativeLayout) findViewById(R.id.cash_list_info);
+        ImageButton closeButton = (ImageButton) findViewById(R.id.closeButton);
         info.setVisibility(preference.getBoolean("cbxInfo", true) ? View.VISIBLE : View.GONE);
 
         if (preference.getBoolean("cbxInfo", true)) {

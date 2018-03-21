@@ -67,7 +67,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         _model = db.getCategoryDetails(_model, _category);
 
         double maxTotal = 0.0;
-        LineChart lineChart = findViewById(R.id.LineChart);
+        LineChart lineChart = (LineChart) findViewById(R.id.LineChart);
 
         for (CategoryDetailsItem item : (List<CategoryDetailsItem>) _model.data) {
             if (maxTotal < item.getTotal())
@@ -88,8 +88,8 @@ public class CategoryDetailsActivity extends AppCompatActivity {
 
         _adapter.notifyDataSetChanged();
 
-        _detailsMonat = findViewById(R.id.detailsMonat);
-        _detailsJahr = findViewById(R.id.detailsJahr);
+        _detailsMonat = (TextView) findViewById(R.id.detailsMonat);
+        _detailsJahr = (TextView) findViewById(R.id.detailsJahr);
 
         _detailsJahr.setText(String.format("Jahr   %.2f €", _model.getYearSum()));
         _detailsMonat.setText(String.format("Monat %.2f €", _model.getMonthSum()));

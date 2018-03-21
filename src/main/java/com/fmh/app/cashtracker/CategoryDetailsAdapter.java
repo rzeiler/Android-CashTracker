@@ -61,9 +61,9 @@ class CategoryDetailsAdapter extends RecyclerView.Adapter<CategoryDetailsAdapter
 
         public CategoryViewHolder(View v) {
             super(v);
-            Bar = v.findViewById(R.id.pbSatus);
-            tvDate = v.findViewById(R.id.tvDate);
-            tvSum = v.findViewById(R.id.tvSum);
+            Bar = (ProgressBar) v.findViewById(R.id.pbSatus);
+            tvDate = (TextView) v.findViewById(R.id.tvDate);
+            tvSum = (TextView) v.findViewById(R.id.tvSum);
         }
     }
 

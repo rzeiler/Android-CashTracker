@@ -97,11 +97,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
         public CategoryViewHolder(View v) {
             super(v);
-            tvBigletter = v.findViewById(R.id.tvBigletter);
-            tvTitle = v.findViewById(R.id.tvTitle);
-            tvSum = v.findViewById(R.id.tvSum);
-            ratingBar = v.findViewById(R.id.ratingBar);
-            tvCount = v.findViewById(R.id.tvCount);
+            tvBigletter = (TextView) v.findViewById(R.id.tvBigletter);
+            tvTitle = (TextView)v.findViewById(R.id.tvTitle);
+            tvSum = (TextView)v.findViewById(R.id.tvSum);
+            ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
+            tvCount = (TextView) v.findViewById(R.id.tvCount);
         }
     }
 

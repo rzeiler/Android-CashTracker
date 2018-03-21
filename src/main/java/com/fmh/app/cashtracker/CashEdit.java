@@ -13,8 +13,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.fmh.app.cashtracker.Models.Cash;
 import com.fmh.app.cashtracker.Models.Category;
@@ -53,10 +55,10 @@ public class CashEdit extends BaseEdit {
 
         getSupportActionBar().setSubtitle(_category.getTitle());
 
-        bDate = findViewById(R.id.bDate);
-        etDescription = findViewById(R.id.etDescription);
-        etSum = findViewById(R.id.etSum);
-        sRepeat = findViewById(R.id.sRepeat);
+        bDate = (Button) findViewById(R.id.bDate);
+        etDescription = (EditText) findViewById(R.id.etDescription);
+        etSum = (EditText) findViewById(R.id.etSum);
+        sRepeat = (Spinner) findViewById(R.id.sRepeat);
 
         if (_cash != null) {
             getSupportActionBar().setTitle(getString(R.string.label_edit_item));
