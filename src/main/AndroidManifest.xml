@@ -16,31 +16,31 @@
         <activity
             android:name=".CategoryListActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name=".CategoryDetailsActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".CategoryListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName=".CategoryListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryListActivity" />
         </activity>
-        <activity
-            android:name=".CategoryEdit"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".CashEdit"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".CashListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CategoryEdit" />
+        <activity android:name=".CashEdit" />
+        <activity android:name=".CashListActivity" />
+
         <activity
             android:name=".Setting"
             android:label="@string/title_activity_setting"
             android:parentActivityName=".CategoryListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fmh.app.cashtracker.CategoryListActivity" />
@@ -51,13 +51,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".SplashActivity"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter></activity>
     </application>
 
 </manifest>

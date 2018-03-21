@@ -12,15 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Visibility;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fmh.app.cashtracker.Models.Category;
 import com.fmh.app.cashtracker.Models.ListMonthYear;
@@ -58,10 +54,10 @@ public class CategoryListActivity extends BaseListActivity {
         getSupportActionBar().setTitle(getString(R.string.label_categorys));
         getSupportActionBar().setSubtitle(getString(R.string.app_name));
 
-        tvMonthLimit = (TextView)findViewById(R.id.tvMonthLimit);
-        tvYearLimit = (TextView)findViewById(R.id.tvYearLimit);
+        tvMonthLimit = (TextView) findViewById(R.id.tvMonthLimit);
+        tvYearLimit = (TextView) findViewById(R.id.tvYearLimit);
         pbYearLimit = (ProgressBar) findViewById(R.id.pbYearLimit);
-        pbMonthLimit = (ProgressBar)findViewById(R.id.pbMonthLimit);
+        pbMonthLimit = (ProgressBar) findViewById(R.id.pbMonthLimit);
 
         preference = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -92,9 +88,6 @@ public class CategoryListActivity extends BaseListActivity {
 
             }
         }, context);
-
-
-
 
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
